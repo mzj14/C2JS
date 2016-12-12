@@ -20,7 +20,7 @@ define i32 @main() #0 {
   %4 = call i32 (i8*, ...) bitcast (i32 (...)* @gets to i32 (i8*, ...)*)(i8* %3)
   store i32 0, i32* %i, align 4
   %5 = getelementptr inbounds [100 x i8], [100 x i8]* %str, i32 0, i32 0
-  %6 = call i64 @strlen(i8* %5) #3
+  %6 = call i64 @strlen(i8* %5)
   %7 = sub i64 %6, 1
   %8 = trunc i64 %7 to i32
   store i32 %8, i32* %len, align 4
@@ -87,13 +87,10 @@ declare i32 @printf(i8*, ...) #1
 
 declare i32 @gets(...) #1
 
-; Function Attrs: nounwind readonly
-declare i64 @strlen(i8*) #2
+declare i64 @strlen(i8*) #1
 
 attributes #0 = { nounwind uwtable "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #1 = { "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { nounwind readonly "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { nounwind readonly }
 
 !llvm.ident = !{!0}
 
