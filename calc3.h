@@ -1,4 +1,9 @@
-typedef enum { typeInt, typeChr, typeStr, typeId, typeOpr } nodeEnum;
+typedef enum { typeTyp, typeInt, typeChr, typeStr, typeId, typeOpr } nodeEnum;
+
+/* types */
+typedef struct {
+    int value;                  /* type category */
+} typNodeType;
 
 /* integers */
 typedef struct {
@@ -32,6 +37,7 @@ typedef struct nodeTypeTag {
 
     /* three types of nodes */
     union {
+        typNodeType conTyp;        /* types */
         intNodeType conInt;        /* integers */
         chrNodeType conChr;        /* chars */
         strNodeType conStr;        /* strings */

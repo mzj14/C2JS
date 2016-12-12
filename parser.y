@@ -8,6 +8,7 @@
 /* prototypes */
 nodeType *opr(int oper, int nops, ...);
 nodeType *id(int i);
+nodeType *conTyp(int value);
 nodeType *conInt(int value);
 nodeType *conChr(char value);
 nodeType *conStr(int i);
@@ -26,6 +27,7 @@ FILE *yyin;
 
 /* set yylval as the following union type */
 %union {
+    int iType;                  /* type category */
     int iValue;                 /* integer value */
     char iChar;                  /* char value */
     int sIndex;                /* symbol table index */
@@ -33,12 +35,13 @@ FILE *yyin;
 };
 
 // need to generate right code
-%token <iValue> INTEGER INT CHAR
+%token <iValue> INTEGER
+%token <iType> INT CHAR
 %token <iChar> CHARACTER
 %token <sIndex> STRING
 %token <sIndex> IDENTIFIER
 %token EQ_OP NE_OP
-%token TYPE
+%token DECLARE
 %token WHILE IF PRINTF BREAK RETURN MAIN GETS STRLEN
 
 /* no associativity */
@@ -61,8 +64,8 @@ function:
         ;
 
 type_name:
-          INT              { $$ = conInt($1); }
-        | CHAR             { $$ = conInt($1); }
+          INT              { $$ = conTyp($1); }
+        | CHAR             { $$ = conTyp($1); }
         ;
 
 statement_list:
@@ -76,8 +79,8 @@ statement:
         | PRINTF '(' STRING ')' ';'                     { $$ = opr(PRINTF, 1, conStr($3)); }
         | GETS '(' IDENTIFIER ')' ';'                   { $$ = opr(GETS, 1, id($3)); }
         | IDENTIFIER '=' expr ';'                       { $$ = opr('=', 2, id($1), $3); }
-        | type_name IDENTIFIER '[' INTEGER ']' ';'      { $$ = opr(TYPE, 3, $1, id($2), conInt($4)); }
-        | type_name IDENTIFIER '=' expr ';'             { $$ = opr(TYPE, 3, $1, id($2), $4); }
+        | type_name IDENTIFIER '[' INTEGER ']' ';'      { $$ = opr(DECLARE, 3, $1, id($2), conInt($4)); }
+        | type_name IDENTIFIER '=' expr ';'             { $$ = opr(DECLARE, 3, $1, id($2), $4); }
         | WHILE '(' expr ')' statement                { $$ = opr(WHILE, 2, $3, $5); }
         | IF '(' expr ')' statement %prec IFX         { $$ = opr(IF, 2, $3, $5); }
         | IF '(' expr ')' statement ELSE statement    { $$ = opr(IF, 3, $3, $5, $7); }  // IF-ELSE is prior to the IF statement
@@ -98,11 +101,27 @@ expr:
         | expr '/' expr               { $$ = opr('/', 2, $1, $3); }
         | expr '<' expr               { $$ = opr('<', 2, $1, $3); }
         | expr '>' expr               { $$ = opr('>', 2, $1, $3); }
-        | expr NE_OP expr                { $$ = opr(NE, 2, $1, $3); }
-        | expr EQ_OP expr                { $$ = opr(EQ, 2, $1, $3); }
+        | expr NE_OP expr                { $$ = opr(NE_OP, 2, $1, $3); }
+        | expr EQ_OP expr                { $$ = opr(EQ_OP, 2, $1, $3); }
         | '(' expr ')'                { $$ = $2; }
         ;
 %%
+
+nodeType *conTyp(int value) {
+    nodeType *p;
+
+    /* allocate node */
+    if ((p = malloc(sizeof(nodeType))) == NULL)
+        yyerror("out of memory");
+
+    /* copy information */
+    /* set the new node to constant node */
+    p->type = typeTyp;
+    /* set constant node value */
+    p->conTyp.value = value;
+
+    return p;
+}
 
 nodeType *conInt(int value) {
     nodeType *p;

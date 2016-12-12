@@ -73,16 +73,17 @@ void exNode
     strcpy (word, "???"); /* should never appear */
     s = word;
     switch(p->type) {
-        case typeInt: sprintf (word, "int(%d)", p->conInt.value); break;
-        case typeChr: sprintf (word, "char(%c)", p->conChr.value); break;
-        case typeStr: sprintf (word, "string(%s)", str[p->conStr.i]); break;
+        case typeTyp:  sprintf (word, "type(%d)", p->conTyp.value); break;
+        case typeInt:  sprintf (word, "int(%d)", p->conInt.value); break;
+        case typeChr:  sprintf (word, "char(%c)", p->conChr.value); break;
+        case typeStr:  sprintf (word, "string(%s)", str[p->conStr.i]); break;
         case typeId :  sprintf (word, "id(%s)", sym[p->id.i]); break;
         case typeOpr:
             switch(p->opr.oper){
                 case WHILE:     s = "while";   break;
                 case IF:        s = "if";      break;
                 case PRINTF:    s = "printf";  break;
-                case TYPE:      s = "declare"; break;
+                case DECLARE:   s = "declare"; break;
                 case BREAK:     s = "break";   break;
                 case RETURN:    s = "return";  break;
                 case MAIN:      s = "main";    break;
@@ -96,8 +97,9 @@ void exNode
                 case '/':       s = "[/]";     break;
                 case '<':       s = "[<]";     break;
                 case '>':       s = "[>]";     break;
-                case NE_OP:        s = "[!=]";    break;
-                case EQ_OP:        s = "[==]";    break;
+                case '[':       s = "[[]";     break;
+                case NE_OP:     s = "[!=]";    break;
+                case EQ_OP:     s = "[==]";    break;
             }
             break;
     }
@@ -109,7 +111,7 @@ void exNode
     *cm = c + w / 2;
 
     /* node is leaf */
-    if (p->type == typeInt || p->type == typeChr || p->type == typeStr || p->type == typeId || p->opr.nops == 0) {
+    if (p->type == typeTyp || p->type == typeInt || p->type == typeChr || p->type == typeStr || p->type == typeId || p->opr.nops == 0) {
         graphDrawBox (s, cbar, l);
         return;
     }
