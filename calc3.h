@@ -1,4 +1,4 @@
-typedef enum { typeTyp, typeInt, typeChr, typeStr, typeId, typeOpr } nodeEnum;
+typedef enum { typeTyp, typeInt, typeChr, typeStr, typeId, typeOpr, typeSta, typeLis } nodeEnum;
 
 /* types */
 typedef struct {
@@ -32,6 +32,20 @@ typedef struct {
     struct nodeTypeTag *op[5];  /* operands, extended at runtime */
 } oprNodeType;
 
+/* statements */
+typedef struct {
+    int mark;                   /* show the statement type */
+    int npts;                   /* number of parts */
+    struct nodeTypeTag *pt[5];  /* statements, extended at runtime */
+} staNodeType;
+
+/* lists */
+typedef struct {
+    int mark;
+    int nsts;
+    struct nodeTypeTag *st[30];
+} lisNodeType;
+
 typedef struct nodeTypeTag {
     nodeEnum type;              /* type of node */
 
@@ -43,6 +57,8 @@ typedef struct nodeTypeTag {
         strNodeType conStr;        /* strings */
         idNodeType id;             /* identifiers */
         oprNodeType opr;           /* operators */
+        staNodeType sta;           /* statements */
+        lisNodeType lis;           /* lists */
     };
 } nodeType;
 

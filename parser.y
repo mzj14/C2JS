@@ -6,6 +6,8 @@
 #include "calc3.h"
 
 /* prototypes */
+nodeType *lis(int mark, int nlis, ...);
+nodeType *sta(int mark, int npts, ...);
 nodeType *opr(int oper, int nops, ...);
 nodeType *id(int i);
 nodeType *conTyp(int value);
@@ -13,6 +15,7 @@ nodeType *conInt(int value);
 nodeType *conChr(char value);
 nodeType *conStr(int i);
 
+int getStateNum(nodeType* p);
 void freeNode(nodeType *p);
 int ex(nodeType *p);
 int yylex(void);
@@ -70,24 +73,24 @@ type_name:
         ;
 
 statement_list:
-          statement                       { $$ = $1; }
-        | statement statement_list        { $$ = opr(';', 2, $1, $2); }  /* create ; node pointing to 2 other nodes, be pointed */
+          statement                       { $$ = lis(';', 1, $1); }
+        | statement statement_list        { $$ = lis(';', 1 + getStateNum($2), $1, $2); }
         ;
 
 statement:
-          BREAK ';'                                     { $$ = opr(BREAK, 0); }
-        | RETURN expr ';'                               { $$ = opr(RETURN, 1, $2); }
-        | PRINTF '(' STRING ')' ';'                     { $$ = opr(PRINTF, 1, conStr($3)); }
-        | PRINTF '(' STRING ',' expr ')' ';'            { $$ = opr(PRINTF, 2, conStr($3), $5); }
-        | GETS '(' IDENTIFIER ')' ';'                   { $$ = opr(GETS, 1, id($3)); }
-        | IDENTIFIER '=' expr ';'                       { $$ = opr('=', 2, id($1), $3); }
-        | IDENTIFIER '[' expr ']' '=' expr ';'          { $$ = opr('=', 3, id($1), $3, $6); }
-        | type_name IDENTIFIER '[' INTEGER ']' ';'      { $$ = opr(DECLARE, 3, $1, id($2), conInt($4)); }
-        | type_name IDENTIFIER '=' expr ';'             { $$ = opr(DECLARE, 3, $1, id($2), $4); }
-        | WHILE '(' expr ')' statement                { $$ = opr(WHILE, 2, $3, $5); }
-        | IF '(' expr ')' statement %prec IFX         { $$ = opr(IF, 2, $3, $5); }
-        | IF '(' expr ')' statement ELSE statement    { $$ = opr(IF, 3, $3, $5, $7); }  // IF-ELSE is prior to the IF statement
-        | '{' statement_list '}'                      { $$ = $2; }
+          BREAK ';'                                     { $$ = sta(BREAK, 0); }
+        | RETURN expr ';'                               { $$ = sta(RETURN, 1, $2); }
+        | PRINTF '(' STRING ')' ';'                     { $$ = sta(PRINTF, 1, conStr($3)); }
+        | PRINTF '(' STRING ',' expr ')' ';'            { $$ = sta(PRINTF, 2, conStr($3), $5); }
+        | GETS '(' IDENTIFIER ')' ';'                   { $$ = sta(GETS, 1, id($3)); }
+        | IDENTIFIER '=' expr ';'                       { $$ = sta('=', 2, id($1), $3); }
+        | IDENTIFIER '[' expr ']' '=' expr ';'          { $$ = sta('=', 3, id($1), $3, $6); }
+        | type_name IDENTIFIER '[' INTEGER ']' ';'      { $$ = sta(DECLARE, 3, $1, id($2), conInt($4)); }
+        | type_name IDENTIFIER '=' expr ';'             { $$ = sta(DECLARE, 3, $1, id($2), $4); }
+        | WHILE '(' expr ')' statement                  { $$ = sta(WHILE, 2, $3, $5); }
+        | IF '(' expr ')' statement %prec IFX           { $$ = sta(IF, 2, $3, $5); }
+        | IF '(' expr ')' statement ELSE statement      { $$ = sta(IF, 3, $3, $5, $7); }  // IF-ELSE is prior to the IF statement
+        | '{' statement_list '}'                        { $$ = $2; }
         ;
 
 expr:
@@ -215,6 +218,67 @@ nodeType *opr(int oper, int nops, ...) {
     for (i = 0; i < nops; i++)
         p->opr.op[i] = va_arg(ap, nodeType*);
     /* make ap to null */
+    va_end(ap);
+    return p;
+}
+
+nodeType *sta(int mark, int npts, ...) {
+    va_list ap;
+    nodeType *p;
+    int i;
+
+    /* allocate node, extending op array */
+    if ((p = malloc(sizeof(nodeType) + (npts-1) * sizeof(nodeType *))) == NULL)
+        yyerror("out of memory");
+
+    /* copy information */
+    /* set the new node to statement node */
+    p->type = typeSta;
+    /* set mark */
+    p->sta.mark = mark;
+    /* set npts */
+    p->sta.npts = npts;
+    /* make ap be the pointer for the argument behind nops */
+    va_start(ap, npts);
+    /* add operand pointer(s) */
+    for (i = 0; i < npts; i++)
+        p->sta.pt[i] = va_arg(ap, nodeType*);
+    /* make ap to null */
+    va_end(ap);
+    return p;
+}
+
+int getStateNum(nodeType* list) {
+    return list->lis.nsts;
+}
+
+nodeType *lis(int mark, int nsts, ...) {
+    va_list ap;
+    nodeType *p;
+    int i;
+
+    /* allocate node, extending op array */
+    if ((p = malloc(sizeof(nodeType) + (nsts-1) * sizeof(nodeType *))) == NULL)
+        yyerror("out of memory");
+
+    /* copy information */
+    /* set the new node to identifier node */
+    p->type = typeLis;
+
+    /* set nsts */
+    p->lis.nsts = nsts;
+
+    /* make ap be the pointer for the argument behind nops */
+    va_start(ap, nsts);
+
+    p->lis.st[0] = va_arg(ap, nodeType*);
+
+    if (nsts > 1) {
+        nodeType* statement_list = va_arg(ap, nodeType*);
+        for (i = 1; i < nsts; i++)
+            p->lis.st[i] = statement_list->lis.st[i - 1];
+    }
+
     va_end(ap);
     return p;
 }
