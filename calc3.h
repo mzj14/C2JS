@@ -1,9 +1,19 @@
-typedef enum { typeCon, typeId, typeOpr } nodeEnum;
+typedef enum { typeInt, typeChr, typeStr, typeId, typeOpr } nodeEnum;
 
-/* constants */
+/* integers */
 typedef struct {
-    int value;                  /* value of constant */
-} conNodeType;
+    int value;                  /* value of integer */
+} intNodeType;
+
+/* chars */
+typedef struct {
+    char value;                  /* value of char */
+} chrNodeType;
+
+/* strings */
+typedef struct {
+    int i;                  /* index to str array */
+} strNodeType;
 
 /* identifiers */
 typedef struct {
@@ -13,7 +23,6 @@ typedef struct {
 /* operators */
 typedef struct {
     int oper;                   /* operator */
-    int order;                  /* order in the set of the production */
     int nops;                   /* number of operands */
     struct nodeTypeTag *op[5];  /* operands, extended at runtime */
 } oprNodeType;
@@ -23,11 +32,18 @@ typedef struct nodeTypeTag {
 
     /* three types of nodes */
     union {
-        conNodeType con;        /* constants */
-        idNodeType id;          /* identifiers */
-        oprNodeType opr;        /* operators */
+        intNodeType conInt;        /* integers */
+        chrNodeType conChr;        /* chars */
+        strNodeType conStr;        /* strings */
+        idNodeType id;             /* identifiers */
+        oprNodeType opr;           /* operators */
     };
 } nodeType;
 
-// symbol table for variable
+// symbol table for identifier
 extern char* sym[100];
+extern int sym_num;
+
+// symbol table for string
+extern char* str[100];
+extern int str_num;
