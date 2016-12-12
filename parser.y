@@ -40,7 +40,7 @@ FILE *yyin;
 %token <iChar> CHARACTER
 %token <sIndex> STRING
 %token <sIndex> IDENTIFIER
-%token EQ_OP NE_OP
+%token AND_OP OR_OP
 %token DECLARE
 %token WHILE IF PRINTF BREAK RETURN MAIN GETS STRLEN
 
@@ -48,9 +48,10 @@ FILE *yyin;
 %nonassoc IFX
 %nonassoc ELSE
 
-%left EQ NE '>' '<'
+%left EQ_OP NE_OP '>' '<'
 %left '+' '-'
 %left '*' '/'
+%nonassoc UMINUS
 
 %type <nPtr> function type_name statement_list statement expr
 
@@ -77,8 +78,10 @@ statement:
           BREAK ';'                                     { $$ = opr(BREAK, 0); }
         | RETURN expr ';'                               { $$ = opr(RETURN, 1, $2); }
         | PRINTF '(' STRING ')' ';'                     { $$ = opr(PRINTF, 1, conStr($3)); }
+        | PRINTF '(' STRING ',' expr ')' ';'            { $$ = opr(PRINTF, 2, conStr($3), $5); }
         | GETS '(' IDENTIFIER ')' ';'                   { $$ = opr(GETS, 1, id($3)); }
         | IDENTIFIER '=' expr ';'                       { $$ = opr('=', 2, id($1), $3); }
+        | IDENTIFIER '[' expr ']' '=' expr ';'          { $$ = opr('=', 3, id($1), $3, $6); }
         | type_name IDENTIFIER '[' INTEGER ']' ';'      { $$ = opr(DECLARE, 3, $1, id($2), conInt($4)); }
         | type_name IDENTIFIER '=' expr ';'             { $$ = opr(DECLARE, 3, $1, id($2), $4); }
         | WHILE '(' expr ')' statement                { $$ = opr(WHILE, 2, $3, $5); }
@@ -92,6 +95,7 @@ expr:
         | CHAR                        { $$ = conChr($1); }
         | STRING                      { $$ = conStr($1); }
         | IDENTIFIER                  { $$ = id($1); }
+        | '-' expr %prec UMINUS       { $$ = opr(UMINUS, 1, $2); }
         | STRLEN '(' IDENTIFIER ')'     { $$ = opr(STRLEN, 1, id($3)); }
         | IDENTIFIER '[' INTEGER ']'    { $$ = opr('[', 2, id($1), conInt($3)); }
         | IDENTIFIER '[' IDENTIFIER ']' { $$ = opr('[', 2, id($1), id($3)); }
@@ -103,6 +107,8 @@ expr:
         | expr '>' expr               { $$ = opr('>', 2, $1, $3); }
         | expr NE_OP expr                { $$ = opr(NE_OP, 2, $1, $3); }
         | expr EQ_OP expr                { $$ = opr(EQ_OP, 2, $1, $3); }
+        | expr AND_OP expr                { $$ = opr(AND_OP, 2, $1, $3); }
+        | expr OR_OP expr                { $$ = opr(OR_OP, 2, $1, $3); }
         | '(' expr ')'                { $$ = $2; }
         ;
 %%

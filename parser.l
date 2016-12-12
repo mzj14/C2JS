@@ -43,6 +43,8 @@ L?'(\\.|[^\\'])+'	{ ECHO; yylval.iChar = *yytext; return(CHARACTER); }
 
 L?\"(\\.|[^\\"])*\"	{ ECHO; yylval.sIndex = getStrIndex(yytext); return(STRING); }
 
+"&&"			{ ECHO; return(AND_OP); }
+"||"			{ ECHO; return(OR_OP); }
 "=="			{ ECHO; return(EQ_OP); }
 "!="			{ ECHO; return(NE_OP); }
 ";"			{ ECHO; return(';'); }
@@ -57,6 +59,7 @@ L?\"(\\.|[^\\"])*\"	{ ECHO; yylval.sIndex = getStrIndex(yytext); return(STRING);
 "+"			{ ECHO; return('+'); }
 "<"			{ ECHO; return('<'); }
 ">"			{ ECHO; return('>'); }
+","         { ECHO; return(','); }
 
 [ \t\v\n\f\r]		{ ECHO; }
 

@@ -98,8 +98,12 @@ void exNode
                 case '<':       s = "[<]";     break;
                 case '>':       s = "[>]";     break;
                 case '[':       s = "[[]";     break;
+                case ',':       s = ",";       break;
                 case NE_OP:     s = "[!=]";    break;
                 case EQ_OP:     s = "[==]";    break;
+                case AND_OP:    s = "[&&]";    break;
+                case OR_OP:     s = "[||]";    break;
+                case UMINUS:    s = "[minus]"; break;
             }
             break;
     }
