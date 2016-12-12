@@ -28,6 +28,7 @@ void exNode (nodeType *p, int c, int l, int *ce, int *cm);
 
 /* main entry point of the manipulation of the syntax tree */
 int ex (nodeType *p) {
+    printf("execute the node");
     int rte, rtm;
     out_graph = fopen("graph.txt", "a+");
     graphInit();
@@ -65,37 +66,40 @@ void exNode
     int k;              /* child number */
     int che, chm;       /* end column and mid of children */
     int cs;             /* start column of children */
-    char word[20];      /* extended node text */
+    char word[200];      /* extended node text */
 
     if (!p) return;
 
     strcpy (word, "???"); /* should never appear */
     s = word;
     switch(p->type) {
-        case typeCon: sprintf (word, "c(%d)", p->con.value); break;
-        case typeId:  sprintf (word, "id(%d)", p->id.i); break;
-        case typeOpr: sprintf (s, "oper(%d)", p->opr.oper); break;
-            /*
+        case typeInt: sprintf (word, "int(%d)", p->conInt.value); break;
+        case typeChr: sprintf (word, "char(%c)", p->conChr.value); break;
+        case typeStr: sprintf (word, "string(%s)", str[p->conStr.i]); break;
+        case typeId :  sprintf (word, "id(%s)", sym[p->id.i]); break;
+        case typeOpr:
             switch(p->opr.oper){
-                case WHILE:     s = "while"; break;
-                case IF:        s = "if";    break;
-                case PRINT:     s = "print"; break;
+                case WHILE:     s = "while";   break;
+                case IF:        s = "if";      break;
+                case PRINTF:    s = "printf";  break;
+                case TYPE:      s = "declare"; break;
+                case BREAK:     s = "break";   break;
+                case RETURN:    s = "return";  break;
+                case MAIN:      s = "main";    break;
+                case GETS:      s = "gets";    break;
+                case STRLEN:    s = "strlen";  break;
                 case ';':       s = "[;]";     break;
                 case '=':       s = "[=]";     break;
-                case UMINUS:    s = "[_]";     break;
                 case '+':       s = "[+]";     break;
                 case '-':       s = "[-]";     break;
                 case '*':       s = "[*]";     break;
                 case '/':       s = "[/]";     break;
                 case '<':       s = "[<]";     break;
                 case '>':       s = "[>]";     break;
-                case GE:        s = "[>=]";    break;
-                case LE:        s = "[<=]";    break;
-                case NE:        s = "[!=]";    break;
-                case EQ:        s = "[==]";    break;
+                case NE_OP:        s = "[!=]";    break;
+                case EQ_OP:        s = "[==]";    break;
             }
             break;
-            */
     }
 
     /* construct node text box */
@@ -105,7 +109,7 @@ void exNode
     *cm = c + w / 2;
 
     /* node is leaf */
-    if (p->type == typeCon || p->type == typeId || p->opr.nops == 0) {
+    if (p->type == typeInt || p->type == typeChr || p->type == typeStr || p->type == typeId || p->opr.nops == 0) {
         graphDrawBox (s, cbar, l);
         return;
     }
