@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string>
+using namespace std;
 
 #include "node.h"
 #include "graph.h"
@@ -296,8 +298,8 @@ void freeNode(nodeType *p) {
     free (p);
 }
 
-void yyerror(char *s) {
-    fprintf(stdout, "%s\n", s);
+void yyerror(string s) {
+    cout << s << endl;
 }
 
 int main(int argc, char *argv[]) {

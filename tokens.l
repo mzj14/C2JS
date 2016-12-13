@@ -5,12 +5,14 @@ L			[a-zA-Z_]
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <string>
 #include "graph.h"
 #include "parser.h"
+using namespace std;
 
 #define ECHO fwrite(yytext, yyleng, 1, yyout);
 
-void yyerror(char *);
+void yyerror(string);
 
 int getIDIndex(char *);
 int getStrIndex(char *);
@@ -60,8 +62,7 @@ L?\"(\\.|[^\\"])*\"	{ ECHO; yylval.sIndex = getStrIndex(yytext); return(STRING);
 "<"			{ ECHO; return('<'); }
 ">"			{ ECHO; return('>'); }
 ","         { ECHO; return(','); }
-
-[ \t\v\n\f\r]		{ ECHO; }
+[ \t\n\r]		{ ECHO; }
 
 .			{ ECHO; yyerror("Unknown character"); }
 
