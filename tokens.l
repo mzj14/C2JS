@@ -6,8 +6,8 @@ L			[a-zA-Z_]
 #include <stdio.h>
 #include <ctype.h>
 #include <string>
-#include "graph.h"
-#include "parser.h"
+#include "graph.hpp"
+#include "parser.hpp"
 using namespace std;
 
 #define ECHO fwrite(yytext, yyleng, 1, yyout);

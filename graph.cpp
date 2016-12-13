@@ -6,8 +6,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "node.h"
-#include "parser.h"
+#include "node.hpp"
+#include "parser.hpp"
 
 int del = 1; /* distance of graph columns */
 int eps = 3; /* distance of graph lines */

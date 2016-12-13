@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.0.2.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Bison implementation for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2013 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "3.0.2"
+#define YYBISON_VERSION "3.0.4"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -67,10 +67,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string>
+using namespace std;
 
-#include "node.h"
-#include "graph.h"
-#include "codegen.h"
+#include "node.hpp"
+#include "graph.hpp"
+#include "codegen.hpp"
 /* prototypes */
 nodeType *lis(int mark, int nlis, ...);
 nodeType *sta(int mark, int npts, ...);
@@ -93,7 +95,7 @@ FILE *yyin;
 extern FILE *out_graph;
 // #define YYDEBUG 1
 
-#line 97 "parser.c" /* yacc.c:339  */
+#line 99 "parser.cpp" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -112,9 +114,9 @@ extern FILE *out_graph;
 #endif
 
 /* In a future release of Bison, this section will be replaced
-   by #include "parser.h".  */
-#ifndef YY_YY_PARSER_H_INCLUDED
-# define YY_YY_PARSER_H_INCLUDED
+   by #include "parser.hpp".  */
+#ifndef YY_YY_PARSER_HPP_INCLUDED
+# define YY_YY_PARSER_HPP_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -152,13 +154,36 @@ extern int yydebug;
     UMINUS = 279
   };
 #endif
+/* Tokens.  */
+#define INTEGER 258
+#define INT 259
+#define CHAR 260
+#define CHARACTER 261
+#define STRING 262
+#define IDENTIFIER 263
+#define AND_OP 264
+#define OR_OP 265
+#define DECLARE 266
+#define WHILE 267
+#define IF 268
+#define PRINTF 269
+#define BREAK 270
+#define RETURN 271
+#define MAIN 272
+#define GETS 273
+#define STRLEN 274
+#define IFX 275
+#define ELSE 276
+#define EQ_OP 277
+#define NE_OP 278
+#define UMINUS 279
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE YYSTYPE;
+
 union YYSTYPE
 {
-#line 33 "parser.y" /* yacc.c:355  */
+#line 35 "parser.y" /* yacc.c:355  */
 
     typeEnum iType;                  /* type category */
     int iValue;                 /* integer value */
@@ -166,8 +191,10 @@ union YYSTYPE
     int sIndex;                /* symbol table index */
     nodeType *nPtr;             /* node pointer */
 
-#line 170 "parser.c" /* yacc.c:355  */
+#line 195 "parser.cpp" /* yacc.c:355  */
 };
+
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
@@ -177,11 +204,11 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_PARSER_H_INCLUDED  */
+#endif /* !YY_YY_PARSER_HPP_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
-#line 185 "parser.c" /* yacc.c:358  */
+#line 212 "parser.cpp" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -480,10 +507,10 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    64,    64,    68,    72,    73,    77,    78,    82,    83,
-      84,    85,    86,    87,    88,    89,    90,    91,    92,    93,
-      94,    98,    99,   100,   101,   102,   103,   104,   105,   106,
-     107,   108,   109,   110,   111,   112,   113,   114,   115,   116
+       0,    66,    66,    70,    74,    75,    79,    80,    84,    85,
+      86,    87,    88,    89,    90,    91,    92,    93,    94,    95,
+      96,   100,   101,   102,   103,   104,   105,   106,   107,   108,
+     109,   110,   111,   112,   113,   114,   115,   116,   117,   118
 };
 #endif
 
@@ -1339,235 +1366,235 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 64 "parser.y" /* yacc.c:1646  */
+#line 66 "parser.y" /* yacc.c:1646  */
     { ex((yyvsp[0].nPtr)); codegen((yyvsp[0].nPtr)); freeNode((yyvsp[0].nPtr)); exit(0); }
-#line 1345 "parser.c" /* yacc.c:1646  */
+#line 1372 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 68 "parser.y" /* yacc.c:1646  */
+#line 70 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr(MAIN, 2, (yyvsp[-4].nPtr), (yyvsp[0].nPtr)); }
-#line 1351 "parser.c" /* yacc.c:1646  */
+#line 1378 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 72 "parser.y" /* yacc.c:1646  */
+#line 74 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = conTyp((yyvsp[0].iType)); }
-#line 1357 "parser.c" /* yacc.c:1646  */
+#line 1384 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 73 "parser.y" /* yacc.c:1646  */
+#line 75 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = conTyp((yyvsp[0].iType)); }
-#line 1363 "parser.c" /* yacc.c:1646  */
+#line 1390 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 77 "parser.y" /* yacc.c:1646  */
+#line 79 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = lis(';', 1, (yyvsp[0].nPtr)); }
-#line 1369 "parser.c" /* yacc.c:1646  */
+#line 1396 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 78 "parser.y" /* yacc.c:1646  */
+#line 80 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = lis(';', 1 + getStateNum((yyvsp[0].nPtr)), (yyvsp[-1].nPtr), (yyvsp[0].nPtr)); }
-#line 1375 "parser.c" /* yacc.c:1646  */
+#line 1402 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 82 "parser.y" /* yacc.c:1646  */
+#line 84 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = sta(BREAK, 0); }
-#line 1381 "parser.c" /* yacc.c:1646  */
+#line 1408 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 83 "parser.y" /* yacc.c:1646  */
+#line 85 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = sta(RETURN, 1, (yyvsp[-1].nPtr)); }
-#line 1387 "parser.c" /* yacc.c:1646  */
+#line 1414 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 84 "parser.y" /* yacc.c:1646  */
+#line 86 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = sta(PRINTF, 1, conStr((yyvsp[-2].sIndex))); }
-#line 1393 "parser.c" /* yacc.c:1646  */
+#line 1420 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 85 "parser.y" /* yacc.c:1646  */
+#line 87 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = sta(PRINTF, 2, conStr((yyvsp[-4].sIndex)), (yyvsp[-2].nPtr)); }
-#line 1399 "parser.c" /* yacc.c:1646  */
+#line 1426 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 86 "parser.y" /* yacc.c:1646  */
+#line 88 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = sta(GETS, 1, id((yyvsp[-2].sIndex))); }
-#line 1405 "parser.c" /* yacc.c:1646  */
+#line 1432 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 87 "parser.y" /* yacc.c:1646  */
+#line 89 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = sta('=', 2, id((yyvsp[-3].sIndex)), (yyvsp[-1].nPtr)); }
-#line 1411 "parser.c" /* yacc.c:1646  */
+#line 1438 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 88 "parser.y" /* yacc.c:1646  */
+#line 90 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = sta('=', 3, id((yyvsp[-6].sIndex)), (yyvsp[-4].nPtr), (yyvsp[-1].nPtr)); }
-#line 1417 "parser.c" /* yacc.c:1646  */
+#line 1444 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 89 "parser.y" /* yacc.c:1646  */
+#line 91 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = sta(DECLARE, 3, (yyvsp[-5].nPtr), id((yyvsp[-4].sIndex)), conInt((yyvsp[-2].iValue))); }
-#line 1423 "parser.c" /* yacc.c:1646  */
+#line 1450 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 90 "parser.y" /* yacc.c:1646  */
+#line 92 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = sta(DECLARE, 3, (yyvsp[-4].nPtr), id((yyvsp[-3].sIndex)), (yyvsp[-1].nPtr)); }
-#line 1429 "parser.c" /* yacc.c:1646  */
+#line 1456 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 91 "parser.y" /* yacc.c:1646  */
+#line 93 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = sta(WHILE, 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1435 "parser.c" /* yacc.c:1646  */
+#line 1462 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 92 "parser.y" /* yacc.c:1646  */
+#line 94 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = sta(IF, 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1441 "parser.c" /* yacc.c:1646  */
+#line 1468 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 93 "parser.y" /* yacc.c:1646  */
+#line 95 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = sta(IF, 3, (yyvsp[-4].nPtr), (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1447 "parser.c" /* yacc.c:1646  */
+#line 1474 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 94 "parser.y" /* yacc.c:1646  */
+#line 96 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = (yyvsp[-1].nPtr); }
-#line 1453 "parser.c" /* yacc.c:1646  */
+#line 1480 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 98 "parser.y" /* yacc.c:1646  */
+#line 100 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = conInt((yyvsp[0].iValue)); }
-#line 1459 "parser.c" /* yacc.c:1646  */
+#line 1486 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 99 "parser.y" /* yacc.c:1646  */
+#line 101 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = conChr((yyvsp[0].iType)); }
-#line 1465 "parser.c" /* yacc.c:1646  */
+#line 1492 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 100 "parser.y" /* yacc.c:1646  */
+#line 102 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = conStr((yyvsp[0].sIndex)); }
-#line 1471 "parser.c" /* yacc.c:1646  */
+#line 1498 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 101 "parser.y" /* yacc.c:1646  */
+#line 103 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = id((yyvsp[0].sIndex)); }
-#line 1477 "parser.c" /* yacc.c:1646  */
+#line 1504 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 102 "parser.y" /* yacc.c:1646  */
+#line 104 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr(UMINUS, 1, (yyvsp[0].nPtr)); }
-#line 1483 "parser.c" /* yacc.c:1646  */
+#line 1510 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 103 "parser.y" /* yacc.c:1646  */
+#line 105 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr(STRLEN, 1, id((yyvsp[-1].sIndex))); }
-#line 1489 "parser.c" /* yacc.c:1646  */
+#line 1516 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 104 "parser.y" /* yacc.c:1646  */
+#line 106 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr('[', 2, id((yyvsp[-3].sIndex)), conInt((yyvsp[-1].iValue))); }
-#line 1495 "parser.c" /* yacc.c:1646  */
+#line 1522 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 105 "parser.y" /* yacc.c:1646  */
+#line 107 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr('[', 2, id((yyvsp[-3].sIndex)), id((yyvsp[-1].sIndex))); }
-#line 1501 "parser.c" /* yacc.c:1646  */
+#line 1528 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 106 "parser.y" /* yacc.c:1646  */
+#line 108 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr('+', 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1507 "parser.c" /* yacc.c:1646  */
+#line 1534 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 107 "parser.y" /* yacc.c:1646  */
+#line 109 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr('-', 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1513 "parser.c" /* yacc.c:1646  */
+#line 1540 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 108 "parser.y" /* yacc.c:1646  */
+#line 110 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr('*', 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1519 "parser.c" /* yacc.c:1646  */
+#line 1546 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 109 "parser.y" /* yacc.c:1646  */
+#line 111 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr('/', 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1525 "parser.c" /* yacc.c:1646  */
+#line 1552 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 110 "parser.y" /* yacc.c:1646  */
+#line 112 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr('<', 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1531 "parser.c" /* yacc.c:1646  */
+#line 1558 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 111 "parser.y" /* yacc.c:1646  */
+#line 113 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr('>', 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1537 "parser.c" /* yacc.c:1646  */
+#line 1564 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 112 "parser.y" /* yacc.c:1646  */
+#line 114 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr(NE_OP, 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1543 "parser.c" /* yacc.c:1646  */
+#line 1570 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 113 "parser.y" /* yacc.c:1646  */
+#line 115 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr(EQ_OP, 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1549 "parser.c" /* yacc.c:1646  */
+#line 1576 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 114 "parser.y" /* yacc.c:1646  */
+#line 116 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr(AND_OP, 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1555 "parser.c" /* yacc.c:1646  */
+#line 1582 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 115 "parser.y" /* yacc.c:1646  */
+#line 117 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr(OR_OP, 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1561 "parser.c" /* yacc.c:1646  */
+#line 1588 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 116 "parser.y" /* yacc.c:1646  */
+#line 118 "parser.y" /* yacc.c:1646  */
     { (yyval.nPtr) = (yyvsp[-1].nPtr); }
-#line 1567 "parser.c" /* yacc.c:1646  */
+#line 1594 "parser.cpp" /* yacc.c:1646  */
     break;
 
 
-#line 1571 "parser.c" /* yacc.c:1646  */
+#line 1598 "parser.cpp" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1795,7 +1822,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 118 "parser.y" /* yacc.c:1906  */
+#line 120 "parser.y" /* yacc.c:1906  */
 
 
 nodeType *conTyp(typeEnum value) {
@@ -1977,8 +2004,8 @@ void freeNode(nodeType *p) {
     free (p);
 }
 
-void yyerror(char *s) {
-    fprintf(stdout, "%s\n", s);
+void yyerror(string s) {
+    cout << s << endl;
 }
 
 int main(int argc, char *argv[]) {

@@ -5,9 +5,9 @@
 #include <string>
 using namespace std;
 
-#include "node.h"
-#include "graph.h"
-#include "codegen.h"
+#include "node.hpp"
+#include "graph.hpp"
+#include "codegen.hpp"
 /* prototypes */
 nodeType *lis(int mark, int nlis, ...);
 nodeType *sta(int mark, int npts, ...);
