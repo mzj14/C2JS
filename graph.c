@@ -28,13 +28,10 @@ void exNode (nodeType *p, int c, int l, int *ce, int *cm);
 
 /* main entry point of the manipulation of the syntax tree */
 int ex (nodeType *p) {
-    // printf("execute the node");
     int rte, rtm;
-    // out_graph = fopen("graph.txt", "a+");
     graphInit();
     exNode(p, 0, 0, &rte, &rtm);
     graphFinish();
-    // fclose(out_graph);
     return 0;
 }
 
