@@ -4,7 +4,8 @@
 #include <stdarg.h>
 
 #include "node.h"
-
+#include "graph.h"
+#include "codegen.h"
 /* prototypes */
 nodeType *lis(int mark, int nlis, ...);
 nodeType *sta(int mark, int npts, ...);
@@ -60,7 +61,7 @@ extern FILE *out_graph;
 
 %%
 program:
-        function                { ex($1); freeNode($1); exit(0); }
+        function                { ex($1); codegen($1); freeNode($1); exit(0); }
         ;
 
 function:
