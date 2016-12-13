@@ -24,7 +24,7 @@ void yyerror(char *s);
 char* sym[100];                    /* identifier table */
 char* str[100];                    /* string table */
 FILE *yyin;
-
+extern FILE *out_graph;
 // #define YYDEBUG 1
 %}
 
@@ -303,8 +303,9 @@ int main(int argc, char *argv[]) {
         // yydebug = 1;
     // #endif
     yyin = fopen(argv[1], "r");
-    // printf("begin parse");
+    out_graph = fopen(argv[2], "w");
     yyparse();
     fclose(yyin);
+    fclose(out_graph);
     return 0;
 }

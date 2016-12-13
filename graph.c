@@ -28,13 +28,13 @@ void exNode (nodeType *p, int c, int l, int *ce, int *cm);
 
 /* main entry point of the manipulation of the syntax tree */
 int ex (nodeType *p) {
-    printf("execute the node");
+    // printf("execute the node");
     int rte, rtm;
-    out_graph = fopen("graph.txt", "a+");
+    // out_graph = fopen("graph.txt", "a+");
     graphInit();
     exNode(p, 0, 0, &rte, &rtm);
     graphFinish();
-    fclose(out_graph);
+    // fclose(out_graph);
     return 0;
 }
 
@@ -73,7 +73,16 @@ void exNode
     strcpy (word, "???"); /* should never appear */
     s = word;
     switch(p->type) {
-        case typeTyp:  sprintf (word, "type(%d)", p->conTyp.value); break;
+        case typeTyp:
+            switch(p->conTyp.value) {
+                case 1:
+                    s = "int";
+                    break;
+                case 0:
+                    s = "char";
+                    break;
+            }
+            break;
         case typeInt:  sprintf (word, "int(%d)", p->conInt.value); break;
         case typeChr:  sprintf (word, "char(%c)", p->conChr.value); break;
         case typeStr:  sprintf (word, "string(%s)", str[p->conStr.i]); break;

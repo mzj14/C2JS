@@ -31,6 +31,10 @@
 # Debug files
 *.dSYM/
 *.su
+
+# Others
 lex.yy.c
 y.tab.c
 y.tab.h
+parser
+*.txt
