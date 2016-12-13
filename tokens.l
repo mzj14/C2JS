@@ -2,6 +2,7 @@ D			[0-9]
 L			[a-zA-Z_]
 
 %{
+#include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
@@ -12,13 +13,12 @@ using namespace std;
 
 #define ECHO fwrite(yytext, yyleng, 1, yyout);
 
-void yyerror(string);
-
 int getIDIndex(char *);
 int getStrIndex(char *);
 
 char* sym[100];
 int sym_num = 0;
+
 char* str[100];
 int str_num = 0;
 %}
@@ -64,7 +64,7 @@ L?\"(\\.|[^\\"])*\"	{ ECHO; yylval.sIndex = getStrIndex(yytext); return(STRING);
 ","         { ECHO; return(','); }
 [ \t\n\r]		{ ECHO; }
 
-.			{ ECHO; yyerror("Unknown character"); }
+.			{ ECHO; cout << "Unknown character" << endl; }
 
 %%
 
@@ -72,7 +72,7 @@ int getStrIndex(char* text) {
   int source_len = strlen(text);
 
   if ((str[str_num] = malloc(sizeof(char) * (source_len + 1))) == NULL) {
-      yyerror("out of memory");
+      cout << "out of memory" << endl;
   } else {
       strncpy(str[str_num], text, source_len);
   }
@@ -95,7 +95,7 @@ int getIDIndex(char* text) {
   }
 
   if ((sym[i] = malloc(sizeof(char) * (source_len + 1))) == NULL) {
-    yyerror("out of memory");
+    cout << "out of memory" << endl;
   } else {
     strncpy(sym[i], text, source_len);
   }

@@ -1,4 +1,5 @@
 %{
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -20,14 +21,10 @@ nodeType *conStr(int i);
 
 int getStateNum(nodeType* p);
 void freeNode(nodeType *p);
+void yyerror(char* s);
 int ex(nodeType *p);
 int yylex(void);
 
-void yyerror(char *s);
-char* sym[100];                    /* identifier table */
-char* str[100];                    /* string table */
-FILE *yyin;
-extern FILE *out_graph;
 // #define YYDEBUG 1
 %}
 
@@ -63,7 +60,7 @@ extern FILE *out_graph;
 
 %%
 program:
-        function                { ex($1); codegen($1); freeNode($1); exit(0); }
+        function                { ex($1); /* codegen($1); */ freeNode($1); exit(0); }
         ;
 
 function:
@@ -124,7 +121,7 @@ nodeType *conTyp(typeEnum value) {
 
     /* allocate node */
     if ((p = malloc(sizeof(nodeType))) == NULL)
-        yyerror("out of memory");
+        cout << "out of memory" << endl;
 
     /* copy information */
     /* set the new node to constant node */
@@ -141,7 +138,7 @@ nodeType *conInt(int value) {
 
     /* allocate node */
     if ((p = malloc(sizeof(nodeType))) == NULL)
-        yyerror("out of memory");
+        cout << "out of memory" << endl;
 
     /* copy information */
     /* set the new node to constant node */
@@ -157,7 +154,7 @@ nodeType *conChr(char value) {
 
     /* allocate node */
     if ((p = malloc(sizeof(nodeType))) == NULL)
-        yyerror("out of memory");
+        cout << "out of memory" << endl;
 
     /* copy information */
     /* set the new node to constant node */
@@ -173,7 +170,7 @@ nodeType *conStr(int i) {
 
     /* allocate node */
     if ((p = malloc(sizeof(nodeType))) == NULL)
-        yyerror("out of memory");
+        cout << "out of memory" << endl;
 
     /* copy information */
     /* set the new node to constant node */
@@ -189,7 +186,7 @@ nodeType *id(int i) {
 
     /* allocate node */
     if ((p = malloc(sizeof(nodeType))) == NULL)
-        yyerror("out of memory");
+        cout << "out of memory" << endl;
 
     /* copy information */
     /* set the new node to identifier node */
@@ -207,7 +204,7 @@ nodeType *opr(int oper, int nops, ...) {
 
     /* allocate node, extending op array */
     if ((p = malloc(sizeof(nodeType) + (nops-1) * sizeof(nodeType *))) == NULL)
-        yyerror("out of memory");
+        cout << "out of memory" << endl;
 
     /* copy information */
     /* set the new node to identifier node */
@@ -233,7 +230,7 @@ nodeType *sta(int mark, int npts, ...) {
 
     /* allocate node, extending op array */
     if ((p = malloc(sizeof(nodeType) + (npts-1) * sizeof(nodeType *))) == NULL)
-        yyerror("out of memory");
+        cout << "out of memory" << endl;
 
     /* copy information */
     /* set the new node to statement node */
@@ -263,7 +260,7 @@ nodeType *lis(int mark, int nsts, ...) {
 
     /* allocate node, extending op array */
     if ((p = malloc(sizeof(nodeType) + (nsts-1) * sizeof(nodeType *))) == NULL)
-        yyerror("out of memory");
+        cout << "out of memory" << endl;
 
     /* copy information */
     /* set the new node to identifier node */
@@ -298,8 +295,8 @@ void freeNode(nodeType *p) {
     free (p);
 }
 
-void yyerror(string s) {
-    cout << s << endl;
+void yyerror(char *s) {
+    fprintf(stderr, "%s\n", s);
 }
 
 int main(int argc, char *argv[]) {

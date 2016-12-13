@@ -1,3 +1,5 @@
+#pragma once
+
 /* node types */
 typedef enum { typeTyp, typeInt, typeChr, typeStr, typeId, typeOpr, typeSta, typeLis } nodeEnum;
 
@@ -73,3 +75,6 @@ extern int sym_num;
 // symbol table for string
 extern char* str[100];
 extern int str_num;
+
+extern FILE *out_graph;
+extern FILE *yyin;
