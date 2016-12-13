@@ -10,7 +10,7 @@ nodeType *lis(int mark, int nlis, ...);
 nodeType *sta(int mark, int npts, ...);
 nodeType *opr(int oper, int nops, ...);
 nodeType *id(int i);
-nodeType *conTyp(int value);
+nodeType *conTyp(typeEnum value);
 nodeType *conInt(int value);
 nodeType *conChr(char value);
 nodeType *conStr(int i);
@@ -30,7 +30,7 @@ extern FILE *out_graph;
 
 /* set yylval as the following union type */
 %union {
-    int iType;                  /* type category */
+    typeEnum iType;                  /* type category */
     int iValue;                 /* integer value */
     char iChar;                  /* char value */
     int sIndex;                /* symbol table index */
@@ -116,7 +116,7 @@ expr:
         ;
 %%
 
-nodeType *conTyp(int value) {
+nodeType *conTyp(typeEnum value) {
     nodeType *p;
 
     /* allocate node */
@@ -126,6 +126,7 @@ nodeType *conTyp(int value) {
     /* copy information */
     /* set the new node to constant node */
     p->type = typeTyp;
+
     /* set constant node value */
     p->conTyp.value = value;
 

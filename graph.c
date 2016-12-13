@@ -72,16 +72,16 @@ void exNode
     switch(p->type) {
         case typeTyp:
             switch(p->conTyp.value) {
-                case 1:
+                case intType:
                     s = "int";
                     break;
-                case 0:
+                case charType:
                     s = "char";
                     break;
             }
             break;
-        case typeInt:  sprintf (word, "int(%d)", p->conInt.value); break;
-        case typeChr:  sprintf (word, "char(%c)", p->conChr.value); break;
+        case typeInt:  sprintf (word, "integer(%d)", p->conInt.value); break;
+        case typeChr:  sprintf (word, "character(%c)", p->conChr.value); break;
         case typeStr:  sprintf (word, "string(%s)", str[p->conStr.i]); break;
         case typeId :  sprintf (word, "id(%s)", sym[p->id.i]); break;
         case typeLis:  sprintf (word, "lis%c", p->lis.mark); break;

@@ -1,8 +1,12 @@
+/* node types */
 typedef enum { typeTyp, typeInt, typeChr, typeStr, typeId, typeOpr, typeSta, typeLis } nodeEnum;
+
+/* data types */
+typedef enum { charType, intType } typeEnum;
 
 /* types */
 typedef struct {
-    int value;                  /* type category */
+    typeEnum value;                  /* type category */
 } typNodeType;
 
 /* integers */
