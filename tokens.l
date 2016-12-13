@@ -5,8 +5,8 @@ L			[a-zA-Z_]
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
-#include "calc3.h"
-#include "y.tab.h"
+#include "graph.h"
+#include "parser.h"
 
 #define ECHO fwrite(yytext, yyleng, 1, yyout);
 

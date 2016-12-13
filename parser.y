@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#include "calc3.h"
+#include "node.h"
 
 /* prototypes */
 nodeType *lis(int mark, int nlis, ...);
