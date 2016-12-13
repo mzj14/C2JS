@@ -5,9 +5,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <string>
 
 #include "node.hpp"
 #include "parser.hpp"
+
+using namespace std;
 
 int del = 1; /* distance of graph columns */
 int eps = 3; /* distance of graph lines */
@@ -63,7 +66,7 @@ void exNode
     int k;              /* child number */
     int che, chm;       /* end column and mid of children */
     int cs;             /* start column of children */
-    char word[200];      /* extended node text */
+    char word[200];        /* extended node text */
 
     if (!p) return;
 
@@ -82,8 +85,8 @@ void exNode
             break;
         case typeInt:  sprintf (word, "integer(%d)", p->conInt.value); break;
         case typeChr:  sprintf (word, "character(%c)", p->conChr.value); break;
-        case typeStr:  sprintf (word, "string(%s)", str[p->conStr.i]); break;
-        case typeId :  sprintf (word, "id(%s)", sym[p->id.i]); break;
+        case typeStr:  sprintf (word, "string(%s)", str[p->conStr.i].c_str()); break;
+        case typeId :  sprintf (word, "id(%s)", sym[p->id.i].c_str()); break;
         case typeLis:  sprintf (word, "lis%c", p->lis.mark); break;
         case typeSta:
             switch(p->sta.mark) {

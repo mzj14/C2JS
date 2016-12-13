@@ -1,4 +1,7 @@
 #pragma once
+#include <vector>
+#include <string>
+using namespace std;
 
 /* node types */
 typedef enum { typeTyp, typeInt, typeChr, typeStr, typeId, typeOpr, typeSta, typeLis } nodeEnum;
@@ -68,13 +71,11 @@ typedef struct nodeTypeTag {
     };
 } nodeType;
 
-// symbol table for identifier
-extern char* sym[100];
-extern int sym_num;
+// vector for identifier
+extern vector<string> sym;
 
-// symbol table for string
-extern char* str[100];
-extern int str_num;
+// vector for string
+extern vector<string> str;
 
 extern FILE *out_graph;
 extern FILE *yyin;

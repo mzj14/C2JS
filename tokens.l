@@ -16,11 +16,8 @@ using namespace std;
 int getIDIndex(char *);
 int getStrIndex(char *);
 
-char* sym[100];
-int sym_num = 0;
-
-char* str[100];
-int str_num = 0;
+vector<string> sym;
+vector<string> str;
 %}
 
 %%
@@ -69,39 +66,29 @@ L?\"(\\.|[^\\"])*\"	{ ECHO; yylval.sIndex = getStrIndex(yytext); return(STRING);
 %%
 
 int getStrIndex(char* text) {
-  int source_len = strlen(text);
+  string textStr(text);
 
-  if ((str[str_num] = malloc(sizeof(char) * (source_len + 1))) == NULL) {
-      cout << "out of memory" << endl;
-  } else {
-      strncpy(str[str_num], text, source_len);
-  }
+  str.push_back(textStr);
 
-  str[str_num][source_len] = '\0';
-  str_num = str_num + 1;
-  return str_num - 1;
+  return (int)str.size() - 1;
 }
 
 int getIDIndex(char* text) {
   int i = 0;
-  int source_len = strlen(text);
+  string textStr(text);
 
-  while (sym[i]) {
-    if (strcmp(sym[i], text)) {
+  int sym_size = (int)sym.size();
+
+  while (i < sym_size) {
+    if (sym[i] == textStr) {
       i++;
     } else {
       return i;
     }
   }
 
-  if ((sym[i] = malloc(sizeof(char) * (source_len + 1))) == NULL) {
-    cout << "out of memory" << endl;
-  } else {
-    strncpy(sym[i], text, source_len);
-  }
+  sym.push_back(textStr);
 
-  sym[i][source_len] = '\0';
-  sym_num = i + 1;
   return i;
 }
 
