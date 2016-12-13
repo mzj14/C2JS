@@ -2,7 +2,7 @@ OBJS = tokens.o parser.o graph.o
 
 LLVMCONFIG = llvm-config
 CPPFLAGS = `$(LLVMCONFIG) --cppflags` -std=c++11
-LDFLAGS = `$(LLVMCONFIG) --ldflags` -lpthread -ldl -lz -lncurses -rdynamic
+LDFLAGS = `$(LLVMCONFIG) --ldflags` -lpthread -ldl -lz -rdynamic
 LIBS = `$(LLVMCONFIG) --libs`
 CC = g++
 

@@ -24,10 +24,10 @@ int str_num = 0;
 %%
 
 "break"			{ ECHO; return(BREAK); }
-"char"			{ ECHO; yylval.iType = 0; return(CHAR); }
+"char"			{ ECHO; yylval.iType = charType; return(CHAR); }
 "else"			{ ECHO; return(ELSE); }
 "if"			{ ECHO; return(IF); }
-"int"			{ ECHO; yylval.iType = 1; return(INT); }
+"int"			{ ECHO; yylval.iType = intType; return(INT); }
 "return"		{ ECHO; return(RETURN); }
 "while"			{ ECHO; return(WHILE); }
 "main"          { ECHO; return(MAIN); }
