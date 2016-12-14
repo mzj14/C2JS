@@ -3,73 +3,78 @@
 #include <string>
 using namespace std;
 
+
 /* node types */
 typedef enum { typeTyp, typeInt, typeChr, typeStr, typeId, typeOpr, typeSta, typeLis } nodeEnum;
 
 /* data types */
 typedef enum { charType, intType } typeEnum;
 
+class nodeType
+{
+public:
+    nodeEnum type;
+};
+
 /* types */
-typedef struct {
+class typeNodeType : public nodeType
+{
+public:
     typeEnum value;                  /* type category */
-} typNodeType;
+};
 
 /* integers */
-typedef struct {
+class intNodeType : public nodeType
+{
+public:
     int value;                  /* value of integer */
-} intNodeType;
+};
 
 /* chars */
-typedef struct {
+class chrNodeType : public nodeType
+{
+public:
     char value;                  /* value of char */
-} chrNodeType;
+};
 
 /* strings */
-typedef struct {
+class strNodeType : public nodeType
+{
+public:
     int i;                  /* index to str array */
-} strNodeType;
+};
 
 /* identifiers */
-typedef struct {
+class idNodeType : public nodeType
+{
+public:
     int i;                      /* index to sym array */
-} idNodeType;
+};
 
 /* operators */
-typedef struct {
+class oprNodeType : public nodeType
+{
+public:
     int oper;                   /* operator */
     int nops;                   /* number of operands */
-    struct nodeTypeTag *op[5];  /* operands, extended at runtime */
-} oprNodeType;
+    vector<nodeType*> op;    /* operands, extended at runtime */
+};
 
 /* statements */
-typedef struct {
+class staNodeType : public nodeType
+{
+public:
     int mark;                   /* show the statement type */
     int npts;                   /* number of parts */
-    struct nodeTypeTag *pt[5];  /* statements, extended at runtime */
-} staNodeType;
+    vector<nodeType*> pt;    /* parts, extended at runtime */
+};
 
 /* lists */
-typedef struct {
-    int mark;
+class lisNodeType : public nodeType {
+public:
     int nsts;
-    struct nodeTypeTag *st[30];
-} lisNodeType;
-
-typedef struct nodeTypeTag {
-    nodeEnum type;              /* type of node */
-
-    /* three types of nodes */
-    union {
-        typNodeType conTyp;        /* types */
-        intNodeType conInt;        /* integers */
-        chrNodeType conChr;        /* chars */
-        strNodeType conStr;        /* strings */
-        idNodeType id;             /* identifiers */
-        oprNodeType opr;           /* operators */
-        staNodeType sta;           /* statements */
-        lisNodeType lis;           /* lists */
-    };
-} nodeType;
+    vector<nodeType*> st;    /* statements, extended at runtime */
+};
 
 // vector for identifier
 extern vector<string> sym;

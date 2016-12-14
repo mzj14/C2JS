@@ -117,107 +117,102 @@ expr:
 %%
 
 nodeType *conTyp(typeEnum value) {
-    nodeType *p;
+    typeNodeType *p;
 
-    /* allocate node */
-    if ((p = malloc(sizeof(nodeType))) == NULL)
-        cout << "out of memory" << endl;
+    p = new typeNodeType();
 
     /* copy information */
     /* set the new node to constant node */
     p->type = typeTyp;
 
     /* set constant node value */
-    p->conTyp.value = value;
+    p->value = value;
 
     return p;
 }
 
 nodeType *conInt(int value) {
-    nodeType *p;
+    intNodeType *p;
 
-    /* allocate node */
-    if ((p = malloc(sizeof(nodeType))) == NULL)
-        cout << "out of memory" << endl;
+    p = new intNodeType();
 
     /* copy information */
     /* set the new node to constant node */
     p->type = typeInt;
+
     /* set constant node value */
-    p->conInt.value = value;
+    p->value = value;
 
     return p;
 }
 
 nodeType *conChr(char value) {
-    nodeType *p;
+    chrNodeType *p;
 
-    /* allocate node */
-    if ((p = malloc(sizeof(nodeType))) == NULL)
-        cout << "out of memory" << endl;
+    p = new chrNodeType();
 
     /* copy information */
     /* set the new node to constant node */
     p->type = typeChr;
     /* set constant node value */
-    p->conChr.value = value;
+    p->value = value;
 
     return p;
 }
 
 nodeType *conStr(int i) {
-    nodeType *p;
+    strNodeType *p;
 
-    /* allocate node */
-    if ((p = malloc(sizeof(nodeType))) == NULL)
-        cout << "out of memory" << endl;
+    p = new strNodeType();
 
     /* copy information */
     /* set the new node to constant node */
     p->type = typeStr;
+
     /* set constant node value */
-    p->conStr.i = i;
+    p->i = i;
 
     return p;
 }
 
 nodeType *id(int i) {
-    nodeType *p;
+    idNodeType *p;
 
-    /* allocate node */
-    if ((p = malloc(sizeof(nodeType))) == NULL)
-        cout << "out of memory" << endl;
+    p = new idNodeType();
 
     /* copy information */
     /* set the new node to identifier node */
     p->type = typeId;
     /* set the identifier index in sym */
-    p->id.i = i;
+    p->i = i;
 
     return p;
 }
 
 nodeType *opr(int oper, int nops, ...) {
     va_list ap;
-    nodeType *p;
+    oprNodeType *p;
     int i;
 
-    /* allocate node, extending op array */
-    if ((p = malloc(sizeof(nodeType) + (nops-1) * sizeof(nodeType *))) == NULL)
-        cout << "out of memory" << endl;
+    p = new oprNodeType();
 
     /* copy information */
     /* set the new node to identifier node */
     p->type = typeOpr;
+
     /* set oper */
-    p->opr.oper = oper;
+    p->oper = oper;
+
     /* set nops */
-    p->opr.nops = nops;
+    p->nops = nops;
+
     /* make ap be the pointer for the argument behind nops */
     va_start(ap, nops);
+
     /* add operand pointer(s) */
     for (i = 0; i < nops; i++)
-        p->opr.op[i] = va_arg(ap, nodeType*);
+        p->op.push_back(va_arg(ap, nodeType*));
+
     /* make ap to null */
     va_end(ap);
     return p;
@@ -225,59 +220,59 @@ nodeType *opr(int oper, int nops, ...) {
 
 nodeType *sta(int mark, int npts, ...) {
     va_list ap;
-    nodeType *p;
+    staNodeType *p;
     int i;
 
-    /* allocate node, extending op array */
-    if ((p = malloc(sizeof(nodeType) + (npts-1) * sizeof(nodeType *))) == NULL)
-        cout << "out of memory" << endl;
+    p = new staNodeType();
 
     /* copy information */
     /* set the new node to statement node */
     p->type = typeSta;
+
     /* set mark */
-    p->sta.mark = mark;
+    p->mark = mark;
+
     /* set npts */
-    p->sta.npts = npts;
+    p->npts = npts;
     /* make ap be the pointer for the argument behind nops */
     va_start(ap, npts);
+
     /* add operand pointer(s) */
     for (i = 0; i < npts; i++)
-        p->sta.pt[i] = va_arg(ap, nodeType*);
+        p->pt.push_back(va_arg(ap, nodeType*));
+
     /* make ap to null */
     va_end(ap);
     return p;
 }
 
 int getStateNum(nodeType* list) {
-    return list->lis.nsts;
+    return ((lisNodeType*)list)->nsts;
 }
 
 nodeType *lis(int mark, int nsts, ...) {
     va_list ap;
-    nodeType *p;
+    lisNodeType *p;
     int i;
 
-    /* allocate node, extending op array */
-    if ((p = malloc(sizeof(nodeType) + (nsts-1) * sizeof(nodeType *))) == NULL)
-        cout << "out of memory" << endl;
+    p = new lisNodeType();
 
     /* copy information */
     /* set the new node to identifier node */
     p->type = typeLis;
 
     /* set nsts */
-    p->lis.nsts = nsts;
+    p->nsts = nsts;
 
     /* make ap be the pointer for the argument behind nops */
     va_start(ap, nsts);
 
-    p->lis.st[0] = va_arg(ap, nodeType*);
+    p->st.push_back(va_arg(ap, nodeType*));
 
     if (nsts > 1) {
-        nodeType* statement_list = va_arg(ap, nodeType*);
+        lisNodeType* statement_list = va_arg(ap, lisNodeType*);
         for (i = 1; i < nsts; i++)
-            p->lis.st[i] = statement_list->lis.st[i - 1];
+            p->st.push_back(statement_list->st[i - 1]);
     }
 
     va_end(ap);
@@ -289,10 +284,21 @@ void freeNode(nodeType *p) {
 
     if (!p) return;
     if (p->type == typeOpr) {
-        for (i = 0; i < p->opr.nops; i++)
-            freeNode(p->opr.op[i]);
+        oprNodeType* pt = (oprNodeType*)p;
+        for (i = 0; i < pt->nops; i++)
+            freeNode(pt->op[i]);
     }
-    free (p);
+    if (p->type == typeSta) {
+        staNodeType* pt = (staNodeType*)p;
+        for (i = 0; i < pt->npts; i++)
+            freeNode(pt->pt[i]);
+    }
+    if (p->type == typeLis) {
+        lisNodeType* pt = (lisNodeType*)p;
+        for (i = 0; i < pt->nsts; i++)
+            freeNode(pt->st[i]);
+    }
+    delete p;
 }
 
 void yyerror(char *s) {
