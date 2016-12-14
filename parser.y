@@ -152,7 +152,7 @@ expr:
         | expr EQ_OP expr                               { $$ = opr(EQ_OP, 2, $1, $3); }
         | expr AND_OP expr                              { $$ = opr(AND_OP, 2, $1, $3); }
         | expr OR_OP expr                               { $$ = opr(OR_OP, 2, $1, $3); }
-        | '(' expr ')'                                  { $$ = $2; }
+        | '(' expr ')'                                  { $$ = opr('(', 1, $2); }
         ;
 %%
 

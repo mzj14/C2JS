@@ -140,6 +140,9 @@ string codeGenOpr(nodeType *p) {
                 case '[':
                     ans = codeGenId(pt->op[0]) + "[" + codeGenOpr(pt->op[1]) + "]";
                     break;
+                case '(':
+                    ans = "(" + codeGenOpr(pt->op[0]) + ")";
+                    break;
                 case STRLEN:
                     ans = codeGenId(pt->op[0]) + ".length";
                     break;

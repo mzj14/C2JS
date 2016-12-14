@@ -58,6 +58,7 @@ L?\"(\\.|[^\\"])*\"	                { ECHO; yylval.sIndex = getStrIndex(yytext);
 "]"		                            { ECHO; return(']'); }
 "-"			                        { ECHO; return('-'); }
 "+"			                        { ECHO; return('+'); }
+"*"                                 { ECHO; return('*'); }
 "<"			                        { ECHO; return('<'); }
 ">"			                        { ECHO; return('>'); }
 ","                                 { ECHO; return(','); }
