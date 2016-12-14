@@ -1,59 +1,96 @@
 %{
+//TODO: remove unnecessary header file
+//TODO: Find a way to reduce the shift/reduce conflict, maybe with %nonassoc and %left
+//TODO: rename opr function to exp function
+//TODO: refactor the yyerror function to avoid compiler warning
+//TODO: rename the ex function to make code more semantic
+//TODO: modify the command line option to support visualizing AST and generating code
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string>
+
+#include "node.hpp"
+#include "graph.hpp"
+#include "codegen.hpp"
+
 using namespace std;
 
-#include "node.h"
-#include "graph.h"
-#include "codegen.h"
 /* prototypes */
-nodeType *lis(int mark, int nlis, ...);
+
+// construct a function type node, return the pointer
+nodeType *fun(int npts, ...);
+
+// construct a block type node, return the pointer
+nodeType *lis(int nlis, ...);
+
+// construct a statement type node, return the pointer
 nodeType *sta(int mark, int npts, ...);
+
+// construct a expression type node, return the pointer
 nodeType *opr(int oper, int nops, ...);
+
+// construct a identifier type node, return the pointer
 nodeType *id(int i);
+
+// construct a type type node, return the pointer
 nodeType *conTyp(typeEnum value);
+
+// construct a int type node, return the pointer
 nodeType *conInt(int value);
+
+// construct a char type node, return the pointer
 nodeType *conChr(char value);
+
+// construct a string type node, return the pointer
 nodeType *conStr(int i);
 
+// show content of sym vector, used for debug
+void showSym(vector<string>& sym);
+
+// get statement num of a block type
 int getStateNum(nodeType* p);
+
+// free the node of AST
 void freeNode(nodeType *p);
+
+void yyerror(char* s);
+
 int ex(nodeType *p);
+
+void codeGenFun(funNodeType *p);
+
+// used by yacc itself
 int yylex(void);
 
-void yyerror(char *s);
-char* sym[100];                    /* identifier table */
-char* str[100];                    /* string table */
-FILE *yyin;
-extern FILE *out_graph;
 // #define YYDEBUG 1
 %}
 
 /* set yylval as the following union type */
 %union {
     typeEnum iType;                  /* type category */
-    int iValue;                 /* integer value */
-    char iChar;                  /* char value */
-    int sIndex;                /* symbol table index */
-    nodeType *nPtr;             /* node pointer */
+    int iValue;                     /* integer value */
+    char iChar;                     /* char value */
+    int sIndex;                     /* sym and str table index */
+    nodeType *nPtr;                 /* node pointer */
 };
 
-// need to generate right code
 %token <iValue> INTEGER
 %token <iType> INT CHAR
 %token <iChar> CHARACTER
 %token <sIndex> STRING
 %token <sIndex> IDENTIFIER
+
 %token AND_OP OR_OP
-%token DECLARE
-%token WHILE IF PRINTF BREAK RETURN MAIN GETS STRLEN
+%token DECLARE DECLARE_ARRAY
+%token WHILE IF PRINTF BREAK RETURN GETS STRLEN
 
 /* no associativity */
 %nonassoc IFX
 %nonassoc ELSE
 
+/* left associativity */
 %left EQ_OP NE_OP '>' '<'
 %left '+' '-'
 %left '*' '/'
@@ -63,21 +100,21 @@ extern FILE *out_graph;
 
 %%
 program:
-        function                { ex($1); codegen($1); freeNode($1); exit(0); }
+        function                                        { /* showSym(sym); */ /* ex($1); */ codeGenFun($1); freeNode($1); exit(0); }
         ;
 
 function:
-        type_name MAIN '(' ')' statement         { $$ = opr(MAIN, 2, $1, $5); }  // function main
+        type_name IDENTIFIER '(' ')' statement          { $$ = fun(3, $1, id($2), $5); }  // function
         ;
 
 type_name:
-          INT              { $$ = conTyp($1); }
-        | CHAR             { $$ = conTyp($1); }
+          INT                                           { $$ = conTyp($1); }
+        | CHAR                                          { $$ = conTyp($1); }
         ;
 
 statement_list:
-          statement                       { $$ = lis(';', 1, $1); }
-        | statement statement_list        { $$ = lis(';', 1 + getStateNum($2), $1, $2); }
+          statement                                     { $$ = lis(1, $1); }
+        | statement statement_list                      { $$ = lis(1 + getStateNum($2), $1, $2); }
         ;
 
 statement:
@@ -88,11 +125,11 @@ statement:
         | GETS '(' IDENTIFIER ')' ';'                   { $$ = sta(GETS, 1, id($3)); }
         | IDENTIFIER '=' expr ';'                       { $$ = sta('=', 2, id($1), $3); }
         | IDENTIFIER '[' expr ']' '=' expr ';'          { $$ = sta('=', 3, id($1), $3, $6); }
-        | type_name IDENTIFIER '[' INTEGER ']' ';'      { $$ = sta(DECLARE, 3, $1, id($2), conInt($4)); }
+        | type_name IDENTIFIER '[' INTEGER ']' ';'      { $$ = sta(DECLARE_ARRAY, 3, $1, id($2), conInt($4)); }
         | type_name IDENTIFIER '=' expr ';'             { $$ = sta(DECLARE, 3, $1, id($2), $4); }
         | WHILE '(' expr ')' statement                  { $$ = sta(WHILE, 2, $3, $5); }
         | IF '(' expr ')' statement %prec IFX           { $$ = sta(IF, 2, $3, $5); }
-        | IF '(' expr ')' statement ELSE statement      { $$ = sta(IF, 3, $3, $5, $7); }  // IF-ELSE is prior to the IF statement
+        | IF '(' expr ')' statement ELSE statement      { $$ = sta(ELSE, 3, $3, $5, $7); }  // IF-ELSE is prior to the IF statement
         | '{' statement_list '}'                        { $$ = $2; }
         ;
 
@@ -120,107 +157,102 @@ expr:
 %%
 
 nodeType *conTyp(typeEnum value) {
-    nodeType *p;
+    typNodeType *p;
 
-    /* allocate node */
-    if ((p = malloc(sizeof(nodeType))) == NULL)
-        yyerror("out of memory");
+    p = new typNodeType();
 
     /* copy information */
     /* set the new node to constant node */
     p->type = typeTyp;
 
     /* set constant node value */
-    p->conTyp.value = value;
+    p->value = value;
 
     return p;
 }
 
 nodeType *conInt(int value) {
-    nodeType *p;
+    intNodeType *p;
 
-    /* allocate node */
-    if ((p = malloc(sizeof(nodeType))) == NULL)
-        yyerror("out of memory");
+    p = new intNodeType();
 
     /* copy information */
     /* set the new node to constant node */
     p->type = typeInt;
+
     /* set constant node value */
-    p->conInt.value = value;
+    p->value = value;
 
     return p;
 }
 
 nodeType *conChr(char value) {
-    nodeType *p;
+    chrNodeType *p;
 
-    /* allocate node */
-    if ((p = malloc(sizeof(nodeType))) == NULL)
-        yyerror("out of memory");
+    p = new chrNodeType();
 
     /* copy information */
     /* set the new node to constant node */
     p->type = typeChr;
     /* set constant node value */
-    p->conChr.value = value;
+    p->value = value;
 
     return p;
 }
 
 nodeType *conStr(int i) {
-    nodeType *p;
+    strNodeType *p;
 
-    /* allocate node */
-    if ((p = malloc(sizeof(nodeType))) == NULL)
-        yyerror("out of memory");
+    p = new strNodeType();
 
     /* copy information */
     /* set the new node to constant node */
     p->type = typeStr;
+
     /* set constant node value */
-    p->conStr.i = i;
+    p->i = i;
 
     return p;
 }
 
 nodeType *id(int i) {
-    nodeType *p;
+    idNodeType *p;
 
-    /* allocate node */
-    if ((p = malloc(sizeof(nodeType))) == NULL)
-        yyerror("out of memory");
+    p = new idNodeType();
 
     /* copy information */
     /* set the new node to identifier node */
     p->type = typeId;
     /* set the identifier index in sym */
-    p->id.i = i;
+    p->i = i;
 
     return p;
 }
 
 nodeType *opr(int oper, int nops, ...) {
     va_list ap;
-    nodeType *p;
+    oprNodeType *p;
     int i;
 
-    /* allocate node, extending op array */
-    if ((p = malloc(sizeof(nodeType) + (nops-1) * sizeof(nodeType *))) == NULL)
-        yyerror("out of memory");
+    p = new oprNodeType();
 
     /* copy information */
     /* set the new node to identifier node */
     p->type = typeOpr;
+
     /* set oper */
-    p->opr.oper = oper;
+    p->oper = oper;
+
     /* set nops */
-    p->opr.nops = nops;
+    p->nops = nops;
+
     /* make ap be the pointer for the argument behind nops */
     va_start(ap, nops);
+
     /* add operand pointer(s) */
     for (i = 0; i < nops; i++)
-        p->opr.op[i] = va_arg(ap, nodeType*);
+        p->op.push_back(va_arg(ap, nodeType*));
+
     /* make ap to null */
     va_end(ap);
     return p;
@@ -228,60 +260,85 @@ nodeType *opr(int oper, int nops, ...) {
 
 nodeType *sta(int mark, int npts, ...) {
     va_list ap;
-    nodeType *p;
+    staNodeType *p;
     int i;
 
-    /* allocate node, extending op array */
-    if ((p = malloc(sizeof(nodeType) + (npts-1) * sizeof(nodeType *))) == NULL)
-        yyerror("out of memory");
+    p = new staNodeType();
 
     /* copy information */
     /* set the new node to statement node */
     p->type = typeSta;
+
     /* set mark */
-    p->sta.mark = mark;
+    p->mark = mark;
+
     /* set npts */
-    p->sta.npts = npts;
+    p->npts = npts;
     /* make ap be the pointer for the argument behind nops */
     va_start(ap, npts);
+
     /* add operand pointer(s) */
     for (i = 0; i < npts; i++)
-        p->sta.pt[i] = va_arg(ap, nodeType*);
+        p->pt.push_back(va_arg(ap, nodeType*));
+
     /* make ap to null */
     va_end(ap);
     return p;
 }
 
 int getStateNum(nodeType* list) {
-    return list->lis.nsts;
+    return ((lisNodeType*)list)->nsts;
 }
 
-nodeType *lis(int mark, int nsts, ...) {
+nodeType *lis(int nsts, ...) {
     va_list ap;
-    nodeType *p;
+    lisNodeType *p;
     int i;
 
-    /* allocate node, extending op array */
-    if ((p = malloc(sizeof(nodeType) + (nsts-1) * sizeof(nodeType *))) == NULL)
-        yyerror("out of memory");
+    p = new lisNodeType();
 
     /* copy information */
     /* set the new node to identifier node */
     p->type = typeLis;
 
     /* set nsts */
-    p->lis.nsts = nsts;
+    p->nsts = nsts;
 
     /* make ap be the pointer for the argument behind nops */
     va_start(ap, nsts);
 
-    p->lis.st[0] = va_arg(ap, nodeType*);
+    p->st.push_back(va_arg(ap, nodeType*));
 
     if (nsts > 1) {
-        nodeType* statement_list = va_arg(ap, nodeType*);
+        lisNodeType* statement_list = va_arg(ap, lisNodeType*);
         for (i = 1; i < nsts; i++)
-            p->lis.st[i] = statement_list->lis.st[i - 1];
+            p->st.push_back(statement_list->st[i - 1]);
     }
+
+    va_end(ap);
+    return p;
+}
+
+nodeType *fun(int npts, ...) {
+    va_list ap;
+    funNodeType *p;
+    int i;
+
+    p = new funNodeType();
+
+    /* copy information */
+    /* set the new node to identifier node */
+    p->type = typeFun;
+
+    /* set npts */
+    p->npts = npts;
+
+    /* make ap be the pointer for the argument behind nops */
+    va_start(ap, npts);
+
+    /* add operand pointer(s) */
+    for (i = 0; i < npts; i++)
+        p->pt.push_back(va_arg(ap, nodeType*));
 
     va_end(ap);
     return p;
@@ -291,25 +348,54 @@ void freeNode(nodeType *p) {
     int i;
 
     if (!p) return;
-    if (p->type == typeOpr) {
-        for (i = 0; i < p->opr.nops; i++)
-            freeNode(p->opr.op[i]);
+    switch (p->type) {
+        case typeOpr:
+            oprNodeType* p_opr = (oprNodeType*)p;
+            for (i = 0; i < p_opr->nops; i++)
+                freeNode(p_opr->op[i]);
+            break;
+        case typeSta:
+            staNodeType* p_sta = (staNodeType*)p;
+            for (i = 0; i < p_sta->npts; i++)
+               freeNode(p_sta->pt[i]);
+            break;
+        case typeLis:
+            lisNodeType* p_lis = (lisNodeType*)p;
+            for (i = 0; i < p_lis->nsts; i++)
+               freeNode(p_lis->st[i]);
+            break;
+        case typeFun:
+            funNodeType* p_fun = (funNodeType*)p;
+            for (i = 0; i < p_fun->npts; i++)
+               freeNode(p_fun->pt[i]);
+            break;
     }
-    free (p);
+
+    delete p;
 }
 
-void yyerror(string s) {
-    cout << s << endl;
+void yyerror(char *s) {
+    fprintf(stderr, "%s\n", s);
+}
+
+void showSym(vector<string> sym) {
+    cout << sym.size() << endl;
+    for (int i = 0; i < sym.size(); i++) {
+       cout << sym[i] << endl;
+    }
+    return;
 }
 
 int main(int argc, char *argv[]) {
     // #if YYDEBUG
-        // yydebug = 1;
+       // yydebug = 1;
     // #endif
     yyin = fopen(argv[1], "r");
-    out_graph = fopen(argv[2], "w");
+    // out_graph = fopen(argv[2], "w");
+    generated_code = fopen(argv[2], "w");
     yyparse();
     fclose(yyin);
-    fclose(out_graph);
+    // fclose(out_graph);
+    fclose(generated_code);
     return 0;
 }

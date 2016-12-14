@@ -5,9 +5,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <string>
 
-#include "node.h"
-#include "parser.h"
+#include "node.hpp"
+#include "parser.hpp"
+
+using namespace std;
 
 int del = 1; /* distance of graph columns */
 int eps = 3; /* distance of graph lines */
@@ -63,7 +66,7 @@ void exNode
     int k;              /* child number */
     int che, chm;       /* end column and mid of children */
     int cs;             /* start column of children */
-    char word[200];      /* extended node text */
+    char word[200];        /* extended node text */
 
     if (!p) return;
 
@@ -71,67 +74,71 @@ void exNode
     s = word;
     switch(p->type) {
         case typeTyp:
-            switch(p->conTyp.value) {
+            switch(((typNodeType*)p)->value) {
                 case intType:
-                    s = "int";
+                    sprintf(s, "int");
                     break;
                 case charType:
-                    s = "char";
+                    sprintf(s, "char");
                     break;
             }
             break;
-        case typeInt:  sprintf (word, "integer(%d)", p->conInt.value); break;
-        case typeChr:  sprintf (word, "character(%c)", p->conChr.value); break;
-        case typeStr:  sprintf (word, "string(%s)", str[p->conStr.i]); break;
-        case typeId :  sprintf (word, "id(%s)", sym[p->id.i]); break;
-        case typeLis:  sprintf (word, "lis%c", p->lis.mark); break;
+        case typeInt:  sprintf (word, "integer(%d)", ((intNodeType*)p)->value); break;
+        case typeChr:  sprintf (word, "character(%c)", ((chrNodeType*)p)->value); break;
+        case typeStr:  sprintf (word, "string(%s)", str[((strNodeType*)p)->i].c_str()); break;
+        case typeId :  sprintf (word, "id(%s)", sym[((idNodeType*)p)->i].c_str()); break;
+        case typeLis:  sprintf (word, "lis * %d", ((lisNodeType*)p)->nsts); break;
+        case typeFun:  sprintf (word, "function"); break;
         case typeSta:
-            switch(p->sta.mark) {
+            switch(((staNodeType*)p)->mark) {
                 case WHILE:
-                    s = "while";
+                    sprintf(s, "while");
                     break;
                 case IF:
-                    s = "if";
+                    sprintf(s, "if");
                     break;
                 case PRINTF:
-                    s = "printf";
+                    sprintf(s, "printf");
                     break;
                 case DECLARE:
-                    s = "declare";
+                    sprintf(s, "declare");
+                    break;
+                case DECLARE_ARRAY:
+                    sprintf(s, "declare_array");
                     break;
                 case BREAK:
-                    s = "break";
+                    sprintf(s, "break");
                     break;
                 case RETURN:
-                    s = "return";
+                    sprintf(s, "return");
                     break;
                 case GETS:
-                    s = "gets";
+                    sprintf(s, "gets");
                     break;
                 case '=':
-                    s = "[=]";
+                    sprintf(s, "[=]");
                     break;
             }
             break;
 
         case typeOpr:
-            switch(p->opr.oper){
-                case MAIN:      s = "main";    break;
-                case STRLEN:    s = "strlen";  break;
-                case '=':       s = "[=]";     break;
-                case '+':       s = "[+]";     break;
-                case '-':       s = "[-]";     break;
-                case '*':       s = "[*]";     break;
-                case '/':       s = "[/]";     break;
-                case '<':       s = "[<]";     break;
-                case '>':       s = "[>]";     break;
-                case '[':       s = "[[]";     break;
-                case ',':       s = ",";       break;
-                case NE_OP:     s = "[!=]";    break;
-                case EQ_OP:     s = "[==]";    break;
-                case AND_OP:    s = "[&&]";    break;
-                case OR_OP:     s = "[||]";    break;
-                case UMINUS:    s = "[minus]"; break;
+            switch(((oprNodeType*)p)->oper){
+                // case MAIN:      sprintf(s, "main");    break;
+                case STRLEN:    sprintf(s, "strlen");  break;
+                case '=':       sprintf(s, "[=]");     break;
+                case '+':       sprintf(s, "[+]");      break;
+                case '-':       sprintf(s, "[-]");     break;
+                case '*':       sprintf(s, "[*]");     break;
+                case '/':       sprintf(s, "[/]");      break;
+                case '<':       sprintf(s, "[<]");     break;
+                case '>':       sprintf(s, "[>]");     break;
+                case '[':       sprintf(s, "[[]");      break;
+                case ',':       sprintf(s, "[,]");      break;
+                case NE_OP:     sprintf(s, "[!=]");     break;
+                case EQ_OP:     sprintf(s, "[==]");    break;
+                case AND_OP:    sprintf(s, "[&&]");    break;
+                case OR_OP:     sprintf(s, "[||]");    break;
+                case UMINUS:    sprintf(s, "[minus]"); break;
             }
             break;
     }
@@ -143,7 +150,12 @@ void exNode
     *cm = c + w / 2;
 
     /* node is leaf */
-    if (p->type == typeTyp || p->type == typeInt || p->type == typeChr || p->type == typeStr || p->type == typeId || p->opr.nops == 0 || p->sta.npts == 0 || p->lis.nsts == 0) {
+    if (p->type == typeTyp || p->type == typeInt || p->type == typeChr || p->type == typeStr || p->type == typeId) {
+        graphDrawBox (s, cbar, l);
+        return;
+    }
+
+    if (p->type == typeOpr && ((oprNodeType*)p)->nops == 0) {
         graphDrawBox (s, cbar, l);
         return;
     }
@@ -151,22 +163,33 @@ void exNode
     /* node has children */
     cs = c;
     if (p->type == typeOpr) {
-        for (k = 0; k < p->opr.nops; k++) {
-            exNode (p->opr.op[k], cs, l+h+eps, &che, &chm);
+        oprNodeType* pt = (oprNodeType*)p;
+        for (k = 0; k < pt->nops; k++) {
+            exNode (pt->op[k], cs, l+h+eps, &che, &chm);
             cs = che;
         }
     }
 
     if (p->type == typeSta) {
-        for (k = 0; k < p->sta.npts; k++) {
-            exNode (p->sta.pt[k], cs, l+h+eps, &che, &chm);
+        staNodeType* pt = (staNodeType*)p;
+        for (k = 0; k < pt->npts; k++) {
+            exNode (pt->pt[k], cs, l+h+eps, &che, &chm);
             cs = che;
         }
     }
 
     if (p->type == typeLis) {
-        for (k = 0; k < p->lis.nsts; k++) {
-            exNode (p->lis.st[k], cs, l+h+eps, &che, &chm);
+        lisNodeType* pt = (lisNodeType*)p;
+        for (k = 0; k < pt->nsts; k++) {
+            exNode (pt->st[k], cs, l+h+eps, &che, &chm);
+            cs = che;
+        }
+    }
+
+    if (p->type == typeFun) {
+        funNodeType* pt = (funNodeType*)p;
+        for (k = 0; k < pt->npts; k++) {
+            exNode (pt->pt[k], cs, l+h+eps, &che, &chm);
             cs = che;
         }
     }
@@ -182,25 +205,45 @@ void exNode
     graphDrawBox (s, cbar, l);
 
     /* draw arrows (not optimal: children are drawn a second time) */
-    cs = c;
-    for (k = 0; k < p->opr.nops; k++) {
-        exNode (p->opr.op[k], cs, l+h+eps, &che, &chm);
-        graphDrawArrow (*cm, l+h, chm, l+h+eps-1);
-        cs = che;
+    if (p->type == typeOpr) {
+        cs = c;
+        oprNodeType* pt = (oprNodeType*)p;
+        for (k = 0; k < pt->nops; k++) {
+            exNode (pt->op[k], cs, l+h+eps, &che, &chm);
+            graphDrawArrow (*cm, l+h, chm, l+h+eps-1);
+            cs = che;
+        }
     }
 
-    cs = c;
-    for (k = 0; k < p->sta.npts; k++) {
-        exNode (p->sta.pt[k], cs, l+h+eps, &che, &chm);
-        graphDrawArrow (*cm, l+h, chm, l+h+eps-1);
-        cs = che;
+
+    if (p->type == typeSta) {
+        cs = c;
+        staNodeType* pt = (staNodeType*)p;
+        for (k = 0; k < pt->npts; k++) {
+            exNode (pt->pt[k], cs, l+h+eps, &che, &chm);
+            graphDrawArrow (*cm, l+h, chm, l+h+eps-1);
+            cs = che;
+        }
     }
 
-    cs = c;
-    for (k = 0; k < p->lis.nsts; k++) {
-        exNode (p->lis.st[k], cs, l+h+eps, &che, &chm);
-        graphDrawArrow (*cm, l+h, chm, l+h+eps-1);
-        cs = che;
+    if (p->type == typeLis) {
+        cs = c;
+        lisNodeType* pt = (lisNodeType*)p;
+        for (k = 0; k < pt->nsts; k++) {
+            exNode (pt->st[k], cs, l+h+eps, &che, &chm);
+            graphDrawArrow (*cm, l+h, chm, l+h+eps-1);
+            cs = che;
+        }
+    }
+
+    if (p->type == typeFun) {
+        cs = c;
+        funNodeType* pt = (funNodeType*)p;
+        for (k = 0; k < pt->npts; k++) {
+            exNode (pt->pt[k], cs, l+h+eps, &che, &chm);
+            graphDrawArrow (*cm, l+h, chm, l+h+eps-1);
+            cs = che;
+        }
     }
 }
 
