@@ -1,4 +1,4 @@
-OBJS = tokens.o parser.o graph.o 
+OBJS = tokens.o parser.o graph.o codeGen.o
 
 LLVMCONFIG = llvm-config
 CPPFLAGS = `$(LLVMCONFIG) --cppflags` -std=c++11 -fpermissive
@@ -23,7 +23,7 @@ parser.hpp: parser.cpp
 	$(CC) -c $(CPPFLAGS) -o $@ $<
 
 test: parser
-	./parser test/level_0.c test/graph_0.txt test/level_0.ll
+	./parser test/level_0.c test/graph_0.txt
 
 clean:
 	rm -rf parser.cpp parser.hpp parser tokens.cpp $(OBJS)

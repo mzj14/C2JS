@@ -17,7 +17,7 @@ public:
 };
 
 /* types */
-class typeNodeType : public nodeType
+class typNodeType : public nodeType
 {
 public:
     typeEnum value;                  /* type category */

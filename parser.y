@@ -25,6 +25,7 @@ int getStateNum(nodeType* p);
 void freeNode(nodeType *p);
 void yyerror(char* s);
 int ex(nodeType *p);
+string codeGenFun(funNodeType *p);
 int yylex(void);
 
 // #define YYDEBUG 1
@@ -46,7 +47,7 @@ int yylex(void);
 %token <sIndex> STRING
 %token <sIndex> IDENTIFIER
 %token AND_OP OR_OP
-%token DECLARE
+%token DECLARE DECLARE_ARRAY
 %token WHILE IF PRINTF BREAK RETURN GETS STRLEN
 
 /* no associativity */
@@ -62,7 +63,7 @@ int yylex(void);
 
 %%
 program:
-        function                { showSym(sym); ex($1); /* codegen($1); */ freeNode($1); exit(0); }
+        function                { /* showSym(sym); */ /* ex($1); */ cout << codeGenFun($1) << endl; freeNode($1); exit(0); }
         ;
 
 function:
@@ -87,7 +88,7 @@ statement:
         | GETS '(' IDENTIFIER ')' ';'                   { $$ = sta(GETS, 1, id($3)); }
         | IDENTIFIER '=' expr ';'                       { $$ = sta('=', 2, id($1), $3); }
         | IDENTIFIER '[' expr ']' '=' expr ';'          { $$ = sta('=', 3, id($1), $3, $6); }
-        | type_name IDENTIFIER '[' INTEGER ']' ';'      { $$ = sta(DECLARE, 3, $1, id($2), conInt($4)); }
+        | type_name IDENTIFIER '[' INTEGER ']' ';'      { $$ = sta(DECLARE_ARRAY, 3, $1, id($2), conInt($4)); }
         | type_name IDENTIFIER '=' expr ';'             { $$ = sta(DECLARE, 3, $1, id($2), $4); }
         | WHILE '(' expr ')' statement                  { $$ = sta(WHILE, 2, $3, $5); }
         | IF '(' expr ')' statement %prec IFX           { $$ = sta(IF, 2, $3, $5); }
@@ -119,9 +120,9 @@ expr:
 %%
 
 nodeType *conTyp(typeEnum value) {
-    typeNodeType *p;
+    typNodeType *p;
 
-    p = new typeNodeType();
+    p = new typNodeType();
 
     /* copy information */
     /* set the new node to constant node */

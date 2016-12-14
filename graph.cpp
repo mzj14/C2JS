@@ -74,7 +74,7 @@ void exNode
     s = word;
     switch(p->type) {
         case typeTyp:
-            switch(((typeNodeType*)p)->value) {
+            switch(((typNodeType*)p)->value) {
                 case intType:
                     sprintf(s, "int");
                     break;
@@ -102,6 +102,9 @@ void exNode
                     break;
                 case DECLARE:
                     sprintf(s, "declare");
+                    break;
+                case DECLARE_ARRAY:
+                    sprintf(s, "declare_array");
                     break;
                 case BREAK:
                     sprintf(s, "break");
