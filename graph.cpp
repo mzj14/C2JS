@@ -88,6 +88,7 @@ void exNode
         case typeStr:  sprintf (word, "string(%s)", str[((strNodeType*)p)->i].c_str()); break;
         case typeId :  sprintf (word, "id(%s)", sym[((idNodeType*)p)->i].c_str()); break;
         case typeLis:  sprintf (word, "lis * %d", ((lisNodeType*)p)->nsts); break;
+        case typeFun:  sprintf (word, "function"); break;
         case typeSta:
             switch(((staNodeType*)p)->mark) {
                 case WHILE:
@@ -119,7 +120,7 @@ void exNode
 
         case typeOpr:
             switch(((oprNodeType*)p)->oper){
-                case MAIN:      sprintf(s, "main");    break;
+                // case MAIN:      sprintf(s, "main");    break;
                 case STRLEN:    sprintf(s, "strlen");  break;
                 case '=':       sprintf(s, "[=]");     break;
                 case '+':       sprintf(s, "[+]");      break;
@@ -151,8 +152,7 @@ void exNode
         return;
     }
 
-    if ((p->type == typeOpr && ((oprNodeType*)p)->nops == 0) || (p->type == typeSta && ((staNodeType*)p)->npts == 0)
-        || (p->type == typeLis && ((lisNodeType*)p)->nsts == 0)) {
+    if (p->type == typeOpr && ((oprNodeType*)p)->nops == 0) {
         graphDrawBox (s, cbar, l);
         return;
     }
@@ -179,6 +179,14 @@ void exNode
         lisNodeType* pt = (lisNodeType*)p;
         for (k = 0; k < pt->nsts; k++) {
             exNode (pt->st[k], cs, l+h+eps, &che, &chm);
+            cs = che;
+        }
+    }
+
+    if (p->type == typeFun) {
+        funNodeType* pt = (funNodeType*)p;
+        for (k = 0; k < pt->npts; k++) {
+            exNode (pt->pt[k], cs, l+h+eps, &che, &chm);
             cs = che;
         }
     }
@@ -220,6 +228,16 @@ void exNode
         lisNodeType* pt = (lisNodeType*)p;
         for (k = 0; k < pt->nsts; k++) {
             exNode (pt->st[k], cs, l+h+eps, &che, &chm);
+            graphDrawArrow (*cm, l+h, chm, l+h+eps-1);
+            cs = che;
+        }
+    }
+
+    if (p->type == typeFun) {
+        cs = c;
+        funNodeType* pt = (funNodeType*)p;
+        for (k = 0; k < pt->npts; k++) {
+            exNode (pt->pt[k], cs, l+h+eps, &che, &chm);
             graphDrawArrow (*cm, l+h, chm, l+h+eps-1);
             cs = che;
         }

@@ -21,7 +21,6 @@ vector<string> str;
 %}
 
 %%
-
 "break"			{ ECHO; return(BREAK); }
 "char"			{ ECHO; yylval.iType = charType; return(CHAR); }
 "else"			{ ECHO; return(ELSE); }
@@ -29,7 +28,6 @@ vector<string> str;
 "int"			{ ECHO; yylval.iType = intType; return(INT); }
 "return"		{ ECHO; return(RETURN); }
 "while"			{ ECHO; return(WHILE); }
-"main"          { ECHO; return(MAIN); }
 "printf"        { ECHO; return(PRINTF); }
 "gets"          { ECHO; return(GETS); }
 "strlen"        { ECHO; return(STRLEN); }
@@ -80,7 +78,7 @@ int getIDIndex(char* text) {
   int sym_size = (int)sym.size();
 
   while (i < sym_size) {
-    if (sym[i] == textStr) {
+    if (sym[i] != textStr) {
       i++;
     } else {
       return i;

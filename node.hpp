@@ -5,7 +5,7 @@ using namespace std;
 
 
 /* node types */
-typedef enum { typeTyp, typeInt, typeChr, typeStr, typeId, typeOpr, typeSta, typeLis } nodeEnum;
+typedef enum { typeTyp, typeInt, typeChr, typeStr, typeId, typeOpr, typeSta, typeLis, typeFun } nodeEnum;
 
 /* data types */
 typedef enum { charType, intType } typeEnum;
@@ -74,6 +74,13 @@ class lisNodeType : public nodeType {
 public:
     int nsts;
     vector<nodeType*> st;    /* statements, extended at runtime */
+};
+
+/* functions */
+class funNodeType : public nodeType {
+public:
+    int npts;                    /* number of parts */
+    vector<nodeType*> pt;    /* parts, extended at runtime */
 };
 
 // vector for identifier

@@ -10,7 +10,8 @@ using namespace std;
 #include "graph.hpp"
 #include "codegen.hpp"
 /* prototypes */
-nodeType *lis(int mark, int nlis, ...);
+nodeType *lis(int nlis, ...);
+nodeType *fun(int npts, ...);
 nodeType *sta(int mark, int npts, ...);
 nodeType *opr(int oper, int nops, ...);
 nodeType *id(int i);
@@ -19,6 +20,7 @@ nodeType *conInt(int value);
 nodeType *conChr(char value);
 nodeType *conStr(int i);
 
+void showSym(vector<string> sym);
 int getStateNum(nodeType* p);
 void freeNode(nodeType *p);
 void yyerror(char* s);
@@ -45,7 +47,7 @@ int yylex(void);
 %token <sIndex> IDENTIFIER
 %token AND_OP OR_OP
 %token DECLARE
-%token WHILE IF PRINTF BREAK RETURN MAIN GETS STRLEN
+%token WHILE IF PRINTF BREAK RETURN GETS STRLEN
 
 /* no associativity */
 %nonassoc IFX
@@ -60,11 +62,11 @@ int yylex(void);
 
 %%
 program:
-        function                { ex($1); /* codegen($1); */ freeNode($1); exit(0); }
+        function                { showSym(sym); ex($1); /* codegen($1); */ freeNode($1); exit(0); }
         ;
 
 function:
-        type_name MAIN '(' ')' statement         { $$ = opr(MAIN, 2, $1, $5); }  // function main
+        type_name IDENTIFIER '(' ')' statement         { $$ = fun(3, $1, id($2), $5); }  // function
         ;
 
 type_name:
@@ -73,8 +75,8 @@ type_name:
         ;
 
 statement_list:
-          statement                       { $$ = lis(';', 1, $1); }
-        | statement statement_list        { $$ = lis(';', 1 + getStateNum($2), $1, $2); }
+          statement                       { $$ = lis(1, $1); }
+        | statement statement_list        { $$ = lis(1 + getStateNum($2), $1, $2); }
         ;
 
 statement:
@@ -250,7 +252,7 @@ int getStateNum(nodeType* list) {
     return ((lisNodeType*)list)->nsts;
 }
 
-nodeType *lis(int mark, int nsts, ...) {
+nodeType *lis(int nsts, ...) {
     va_list ap;
     lisNodeType *p;
     int i;
@@ -279,6 +281,31 @@ nodeType *lis(int mark, int nsts, ...) {
     return p;
 }
 
+nodeType *fun(int npts, ...) {
+    va_list ap;
+    funNodeType *p;
+    int i;
+
+    p = new funNodeType();
+
+    /* copy information */
+    /* set the new node to identifier node */
+    p->type = typeFun;
+
+    /* set npts */
+    p->npts = npts;
+
+    /* make ap be the pointer for the argument behind nops */
+    va_start(ap, npts);
+
+    /* add operand pointer(s) */
+    for (i = 0; i < npts; i++)
+        p->pt.push_back(va_arg(ap, nodeType*));
+
+    va_end(ap);
+    return p;
+}
+
 void freeNode(nodeType *p) {
     int i;
 
@@ -298,6 +325,13 @@ void freeNode(nodeType *p) {
         for (i = 0; i < pt->nsts; i++)
             freeNode(pt->st[i]);
     }
+
+    if (p->type == typeFun) {
+        funNodeType* pt = (funNodeType*)p;
+        for (i = 0; i < pt->npts; i++)
+            freeNode(pt->pt[i]);
+    }
+
     delete p;
 }
 
@@ -305,12 +339,21 @@ void yyerror(char *s) {
     fprintf(stderr, "%s\n", s);
 }
 
+void showSym(vector<string> sym) {
+    cout << sym.size() << endl;
+    for (int i = 0; i < sym.size(); i++) {
+       cout << sym[i] << endl;
+    }
+    return;
+}
+
 int main(int argc, char *argv[]) {
     // #if YYDEBUG
-        // yydebug = 1;
+       // yydebug = 1;
     // #endif
     yyin = fopen(argv[1], "r");
     out_graph = fopen(argv[2], "w");
+
     yyparse();
     fclose(yyin);
     fclose(out_graph);
