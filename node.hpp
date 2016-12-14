@@ -1,4 +1,6 @@
 #pragma once
+#include <fstream>
+#include <iostream>
 #include <vector>
 #include <string>
 using namespace std;
@@ -90,4 +92,5 @@ extern vector<string> sym;
 extern vector<string> str;
 
 extern FILE *out_graph;
+extern FILE *generated_code;
 extern FILE *yyin;

@@ -9,6 +9,7 @@ using namespace std;
 #include "node.hpp"
 #include "graph.hpp"
 #include "codegen.hpp"
+
 /* prototypes */
 nodeType *lis(int nlis, ...);
 nodeType *fun(int npts, ...);
@@ -27,6 +28,8 @@ void yyerror(char* s);
 int ex(nodeType *p);
 string codeGenFun(funNodeType *p);
 int yylex(void);
+
+// FILE *generated_code;
 
 // #define YYDEBUG 1
 %}
@@ -92,7 +95,7 @@ statement:
         | type_name IDENTIFIER '=' expr ';'             { $$ = sta(DECLARE, 3, $1, id($2), $4); }
         | WHILE '(' expr ')' statement                  { $$ = sta(WHILE, 2, $3, $5); }
         | IF '(' expr ')' statement %prec IFX           { $$ = sta(IF, 2, $3, $5); }
-        | IF '(' expr ')' statement ELSE statement      { $$ = sta(IF, 3, $3, $5, $7); }  // IF-ELSE is prior to the IF statement
+        | IF '(' expr ')' statement ELSE statement      { $$ = sta(ELSE, 3, $3, $5, $7); }  // IF-ELSE is prior to the IF statement
         | '{' statement_list '}'                        { $$ = $2; }
         ;
 
@@ -353,8 +356,8 @@ int main(int argc, char *argv[]) {
        // yydebug = 1;
     // #endif
     yyin = fopen(argv[1], "r");
-    out_graph = fopen(argv[2], "w");
-
+    // out_graph = fopen(argv[2], "w");
+    generated_code = fopen(argv[2], "w");
     yyparse();
     fclose(yyin);
     fclose(out_graph);
