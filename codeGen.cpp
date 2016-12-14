@@ -10,19 +10,54 @@
 #include "node.hpp"
 #include "parser.hpp"
 #include "codegen.hpp"
+
 using namespace std;
 
-
+// TODO: Does string copy waste a lot of time?
+// TODO: Something maybe wrong with char
+// TODO: Do we need reference type for params and return value?
+// vectors for node js require module statements
 vector<string> container;
 vector<string> module;
 
 FILE *generated_code;
 
-string codeGenLis(lisNodeType *p);
+// set js module for require module statements
+void setModuleInfo(string container_name, string module_name);
+
+// get require module statements based on module info
+string getModuleInfo();
+
+// return the code of a function
+void codeGenFun(funNodeType* p);
+
+// return the code of a block
+string codeGenLis(lisNodeType* p);
+
+// return the code of a statement
+// note that a statement could also be a block
+string codeGenSta(staNodeType* p);
+
+// return the code of a expression
+// note that an expression could also be an id, int, char or string
+string codeGenOpr(nodeType *p);
+
+// return the code of a identifier
+string codeGenId(idNodeType *p);
+
+// return the code of a string
+string codeGenStr(strNodeType *p);
+
+// return the code of a integer
+string codeGenInt(intNodeType *p);
+
+// return the code of a char
+string codeGenChar(chrNodeType *p);
 
 void setModuleInfo(string container_name, string module_name) {
-    cout << "set module info" << endl;
-    vector<string>::iterator result = find(module.begin( ), module.end( ), module_name); //查找3
+    // cout << "set module info" << endl;
+    vector<string>::iterator result = find(module.begin( ), module.end( ), module_name);
+    // can not find the module
     if (result == module.end()) {
         container.push_back(container_name);
         module.push_back(module_name);
@@ -38,12 +73,11 @@ string getModuleInfo() {
     return ans;
 }
 
-// TODO: Does string copy waste a lot of time?
 string codeGenTyp(typNodeType *p) {
+    // there is no obvious type in js declaration, so return "var" instead of data type.
     return "var";
 }
 
-// TODO: maybe saved as string at the beginning
 string codeGenInt(intNodeType *p) {
     string ans = to_string(p->value);
     return ans;
@@ -117,7 +151,7 @@ string codeGenOpr(nodeType *p) {
     return ans;
 }
 
-string codeGenSta(staNodeType *p) {
+string codeGenSta(staNodeType* p) {
     // cout << "in the statement function" << endl;
     // cout << "p->mark = " << p->mark << endl;
     string ans = "";
@@ -174,7 +208,7 @@ string codeGenSta(staNodeType *p) {
     return ans;
 }
 
-string codeGenLis(lisNodeType *p) {
+string codeGenLis(lisNodeType* p) {
     string ans = "{\n";
     cout << "totally " << p->nsts << " statements." << endl;
     for (int i = 0; i < p->nsts; i++) {
@@ -185,7 +219,7 @@ string codeGenLis(lisNodeType *p) {
     return ans;
 }
 
-void codeGenFun(funNodeType *p) {
+void codeGenFun(funNodeType* p) {
     // cout << "enter codeGenFun" << endl;
     string ans = "function ";
     ans += codeGenId(p->pt[1]);

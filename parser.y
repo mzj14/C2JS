@@ -104,7 +104,7 @@ program:
         ;
 
 function:
-        type_name IDENTIFIER '(' ')' statement          { $$ = fun(3, $1, id($2), $5); }  // function
+        type_name IDENTIFIER '(' ')' statement          { $$ = fun(3, $1, id($2), $5); }
         ;
 
 type_name:
@@ -127,32 +127,32 @@ statement:
         | IDENTIFIER '[' expr ']' '=' expr ';'          { $$ = sta('=', 3, id($1), $3, $6); }
         | type_name IDENTIFIER '[' INTEGER ']' ';'      { $$ = sta(DECLARE_ARRAY, 3, $1, id($2), conInt($4)); }
         | type_name IDENTIFIER '=' expr ';'             { $$ = sta(DECLARE, 3, $1, id($2), $4); }
-        | WHILE '(' expr ')' statement                  { $$ = sta(WHILE, 2, $3, $5); }
+        | WHILE '(' expr ')' statement_list             { $$ = sta(WHILE, 2, $3, $5); }
         | IF '(' expr ')' statement %prec IFX           { $$ = sta(IF, 2, $3, $5); }
         | IF '(' expr ')' statement ELSE statement      { $$ = sta(ELSE, 3, $3, $5, $7); }  // IF-ELSE is prior to the IF statement
         | '{' statement_list '}'                        { $$ = $2; }
         ;
 
 expr:
-          INTEGER                     { $$ = conInt($1); }
-        | CHAR                        { $$ = conChr($1); }
-        | STRING                      { $$ = conStr($1); }
-        | IDENTIFIER                  { $$ = id($1); }
-        | '-' expr %prec UMINUS       { $$ = opr(UMINUS, 1, $2); }
-        | STRLEN '(' IDENTIFIER ')'     { $$ = opr(STRLEN, 1, id($3)); }
-        | IDENTIFIER '[' INTEGER ']'    { $$ = opr('[', 2, id($1), conInt($3)); }
-        | IDENTIFIER '[' IDENTIFIER ']' { $$ = opr('[', 2, id($1), id($3)); }
-        | expr '+' expr               { $$ = opr('+', 2, $1, $3); }
-        | expr '-' expr               { $$ = opr('-', 2, $1, $3); }
-        | expr '*' expr               { $$ = opr('*', 2, $1, $3); }
-        | expr '/' expr               { $$ = opr('/', 2, $1, $3); }
-        | expr '<' expr               { $$ = opr('<', 2, $1, $3); }
-        | expr '>' expr               { $$ = opr('>', 2, $1, $3); }
-        | expr NE_OP expr                { $$ = opr(NE_OP, 2, $1, $3); }
-        | expr EQ_OP expr                { $$ = opr(EQ_OP, 2, $1, $3); }
-        | expr AND_OP expr                { $$ = opr(AND_OP, 2, $1, $3); }
-        | expr OR_OP expr                { $$ = opr(OR_OP, 2, $1, $3); }
-        | '(' expr ')'                { $$ = $2; }
+          INTEGER                                       { $$ = conInt($1); }
+        | CHAR                                          { $$ = conChr($1); }
+        | STRING                                        { $$ = conStr($1); }
+        | IDENTIFIER                                    { $$ = id($1); }
+        | '-' expr %prec UMINUS                         { $$ = opr(UMINUS, 1, $2); }
+        | STRLEN '(' IDENTIFIER ')'                     { $$ = opr(STRLEN, 1, id($3)); }
+        | IDENTIFIER '[' INTEGER ']'                    { $$ = opr('[', 2, id($1), conInt($3)); }
+        | IDENTIFIER '[' IDENTIFIER ']'                 { $$ = opr('[', 2, id($1), id($3)); }
+        | expr '+' expr                                 { $$ = opr('+', 2, $1, $3); }
+        | expr '-' expr                                 { $$ = opr('-', 2, $1, $3); }
+        | expr '*' expr                                 { $$ = opr('*', 2, $1, $3); }
+        | expr '/' expr                                 { $$ = opr('/', 2, $1, $3); }
+        | expr '<' expr                                 { $$ = opr('<', 2, $1, $3); }
+        | expr '>' expr                                 { $$ = opr('>', 2, $1, $3); }
+        | expr NE_OP expr                               { $$ = opr(NE_OP, 2, $1, $3); }
+        | expr EQ_OP expr                               { $$ = opr(EQ_OP, 2, $1, $3); }
+        | expr AND_OP expr                              { $$ = opr(AND_OP, 2, $1, $3); }
+        | expr OR_OP expr                               { $$ = opr(OR_OP, 2, $1, $3); }
+        | '(' expr ')'                                  { $$ = $2; }
         ;
 %%
 
@@ -194,6 +194,7 @@ nodeType *conChr(char value) {
     /* copy information */
     /* set the new node to constant node */
     p->type = typeChr;
+
     /* set constant node value */
     p->value = value;
 
@@ -274,6 +275,7 @@ nodeType *sta(int mark, int npts, ...) {
 
     /* set npts */
     p->npts = npts;
+
     /* make ap be the pointer for the argument behind nops */
     va_start(ap, npts);
 
