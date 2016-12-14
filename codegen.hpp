@@ -6,4 +6,4 @@
 #include "node.hpp"
 #include "parser.hpp"
 
-extern string codeGenFunc(funNodeType *p);
+extern void codeGenFunc(funNodeType *p);

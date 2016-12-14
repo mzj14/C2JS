@@ -1,17 +1,25 @@
 #pragma once
+
 #include <fstream>
 #include <iostream>
 #include <vector>
 #include <string>
+
 using namespace std;
 
+//TODO: remove unnecessary header file
+//TODO: add constructor function for node classes
+//TODO: rename the opr(operation) to exp(expression) to make code more semantic
+//TODO: remove i to index to make code more semantic
+//TODO: rename lis(lists) to blk(block) to make code more semantic
 
 /* node types */
 typedef enum { typeTyp, typeInt, typeChr, typeStr, typeId, typeOpr, typeSta, typeLis, typeFun } nodeEnum;
 
-/* data types */
+/* variable types */
 typedef enum { charType, intType } typeEnum;
 
+/* super class for all nodes */
 class nodeType
 {
 public:
@@ -29,60 +37,60 @@ public:
 class intNodeType : public nodeType
 {
 public:
-    int value;                  /* value of integer */
+    int value;                      /* value of integer */
 };
 
 /* chars */
 class chrNodeType : public nodeType
 {
 public:
-    char value;                  /* value of char */
+    char value;                     /* value of char */
 };
 
 /* strings */
 class strNodeType : public nodeType
 {
 public:
-    int i;                  /* index to str array */
+    int i;                          /* index to global str vector */
 };
 
 /* identifiers */
 class idNodeType : public nodeType
 {
 public:
-    int i;                      /* index to sym array */
+    int i;                          /* index to global sym vector */
 };
 
-/* operators */
+/* expressions */
 class oprNodeType : public nodeType
 {
 public:
-    int oper;                   /* operator */
-    int nops;                   /* number of operands */
-    vector<nodeType*> op;    /* operands, extended at runtime */
+    int oper;                       /* operator */
+    int nops;                       /* number of operands */
+    vector<nodeType*> op;           /* operands, extended at runtime */
 };
 
 /* statements */
 class staNodeType : public nodeType
 {
 public:
-    int mark;                   /* show the statement type */
-    int npts;                   /* number of parts */
-    vector<nodeType*> pt;    /* parts, extended at runtime */
+    int mark;                       /* show the statement type */
+    int npts;                       /* number of parts */
+    vector<nodeType*> pt;           /* parts, extended at runtime */
 };
 
-/* lists */
+/* statement lists */
 class lisNodeType : public nodeType {
 public:
-    int nsts;
-    vector<nodeType*> st;    /* statements, extended at runtime */
+    int nsts;                       /* number of statements */
+    vector<nodeType*> st;           /* statements, extended at runtime */
 };
 
 /* functions */
 class funNodeType : public nodeType {
 public:
-    int npts;                    /* number of parts */
-    vector<nodeType*> pt;    /* parts, extended at runtime */
+    int npts;                       /* number of parts, usually be 4 */
+    vector<nodeType*> pt;           /* parts, extended at runtime */
 };
 
 // vector for identifier
@@ -91,6 +99,11 @@ extern vector<string> sym;
 // vector for string
 extern vector<string> str;
 
+// output file for AST visualization
 extern FILE *out_graph;
+
+// output file for generated JS code
 extern FILE *generated_code;
+
+// input file of origin C code
 extern FILE *yyin;

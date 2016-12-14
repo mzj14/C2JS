@@ -185,7 +185,7 @@ string codeGenLis(lisNodeType *p) {
     return ans;
 }
 
-string codeGenFun(funNodeType *p) {
+void codeGenFun(funNodeType *p) {
     // cout << "enter codeGenFun" << endl;
     string ans = "function ";
     ans += codeGenId(p->pt[1]);
@@ -194,6 +194,6 @@ string codeGenFun(funNodeType *p) {
     ans.insert(0, getModuleInfo());
     ans += "main();";
     fwrite(ans.c_str(), sizeof(char), ans.length(), generated_code);
-    return ans;
+    return;
 }
 

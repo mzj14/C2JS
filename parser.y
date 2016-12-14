@@ -1,35 +1,68 @@
 %{
+//TODO: remove unnecessary header file
+//TODO: Find a way to reduce the shift/reduce conflict, maybe with %nonassoc and %left
+//TODO: rename opr function to exp function
+//TODO: refactor the yyerror function to avoid compiler warning
+//TODO: rename the ex function to make code more semantic
+//TODO: modify the command line option to support visualizing AST and generating code
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string>
-using namespace std;
 
 #include "node.hpp"
 #include "graph.hpp"
 #include "codegen.hpp"
 
+using namespace std;
+
 /* prototypes */
-nodeType *lis(int nlis, ...);
+
+// construct a function type node, return the pointer
 nodeType *fun(int npts, ...);
+
+// construct a block type node, return the pointer
+nodeType *lis(int nlis, ...);
+
+// construct a statement type node, return the pointer
 nodeType *sta(int mark, int npts, ...);
+
+// construct a expression type node, return the pointer
 nodeType *opr(int oper, int nops, ...);
+
+// construct a identifier type node, return the pointer
 nodeType *id(int i);
+
+// construct a type type node, return the pointer
 nodeType *conTyp(typeEnum value);
+
+// construct a int type node, return the pointer
 nodeType *conInt(int value);
+
+// construct a char type node, return the pointer
 nodeType *conChr(char value);
+
+// construct a string type node, return the pointer
 nodeType *conStr(int i);
 
-void showSym(vector<string> sym);
-int getStateNum(nodeType* p);
-void freeNode(nodeType *p);
-void yyerror(char* s);
-int ex(nodeType *p);
-string codeGenFun(funNodeType *p);
-int yylex(void);
+// show content of sym vector, used for debug
+void showSym(vector<string>& sym);
 
-// FILE *generated_code;
+// get statement num of a block type
+int getStateNum(nodeType* p);
+
+// free the node of AST
+void freeNode(nodeType *p);
+
+void yyerror(char* s);
+
+int ex(nodeType *p);
+
+void codeGenFun(funNodeType *p);
+
+// used by yacc itself
+int yylex(void);
 
 // #define YYDEBUG 1
 %}
@@ -37,18 +70,18 @@ int yylex(void);
 /* set yylval as the following union type */
 %union {
     typeEnum iType;                  /* type category */
-    int iValue;                 /* integer value */
-    char iChar;                  /* char value */
-    int sIndex;                /* symbol table index */
-    nodeType *nPtr;             /* node pointer */
+    int iValue;                     /* integer value */
+    char iChar;                     /* char value */
+    int sIndex;                     /* sym and str table index */
+    nodeType *nPtr;                 /* node pointer */
 };
 
-// need to generate right code
 %token <iValue> INTEGER
 %token <iType> INT CHAR
 %token <iChar> CHARACTER
 %token <sIndex> STRING
 %token <sIndex> IDENTIFIER
+
 %token AND_OP OR_OP
 %token DECLARE DECLARE_ARRAY
 %token WHILE IF PRINTF BREAK RETURN GETS STRLEN
@@ -57,6 +90,7 @@ int yylex(void);
 %nonassoc IFX
 %nonassoc ELSE
 
+/* left associativity */
 %left EQ_OP NE_OP '>' '<'
 %left '+' '-'
 %left '*' '/'
@@ -66,21 +100,21 @@ int yylex(void);
 
 %%
 program:
-        function                { /* showSym(sym); */ /* ex($1); */ cout << codeGenFun($1) << endl; freeNode($1); exit(0); }
+        function                                        { /* showSym(sym); */ /* ex($1); */ codeGenFun($1); freeNode($1); exit(0); }
         ;
 
 function:
-        type_name IDENTIFIER '(' ')' statement         { $$ = fun(3, $1, id($2), $5); }  // function
+        type_name IDENTIFIER '(' ')' statement          { $$ = fun(3, $1, id($2), $5); }  // function
         ;
 
 type_name:
-          INT              { $$ = conTyp($1); }
-        | CHAR             { $$ = conTyp($1); }
+          INT                                           { $$ = conTyp($1); }
+        | CHAR                                          { $$ = conTyp($1); }
         ;
 
 statement_list:
-          statement                       { $$ = lis(1, $1); }
-        | statement statement_list        { $$ = lis(1 + getStateNum($2), $1, $2); }
+          statement                                     { $$ = lis(1, $1); }
+        | statement statement_list                      { $$ = lis(1 + getStateNum($2), $1, $2); }
         ;
 
 statement:
@@ -314,26 +348,27 @@ void freeNode(nodeType *p) {
     int i;
 
     if (!p) return;
-    if (p->type == typeOpr) {
-        oprNodeType* pt = (oprNodeType*)p;
-        for (i = 0; i < pt->nops; i++)
-            freeNode(pt->op[i]);
-    }
-    if (p->type == typeSta) {
-        staNodeType* pt = (staNodeType*)p;
-        for (i = 0; i < pt->npts; i++)
-            freeNode(pt->pt[i]);
-    }
-    if (p->type == typeLis) {
-        lisNodeType* pt = (lisNodeType*)p;
-        for (i = 0; i < pt->nsts; i++)
-            freeNode(pt->st[i]);
-    }
-
-    if (p->type == typeFun) {
-        funNodeType* pt = (funNodeType*)p;
-        for (i = 0; i < pt->npts; i++)
-            freeNode(pt->pt[i]);
+    switch (p->type) {
+        case typeOpr:
+            oprNodeType* p_opr = (oprNodeType*)p;
+            for (i = 0; i < p_opr->nops; i++)
+                freeNode(p_opr->op[i]);
+            break;
+        case typeSta:
+            staNodeType* p_sta = (staNodeType*)p;
+            for (i = 0; i < p_sta->npts; i++)
+               freeNode(p_sta->pt[i]);
+            break;
+        case typeLis:
+            lisNodeType* p_lis = (lisNodeType*)p;
+            for (i = 0; i < p_lis->nsts; i++)
+               freeNode(p_lis->st[i]);
+            break;
+        case typeFun:
+            funNodeType* p_fun = (funNodeType*)p;
+            for (i = 0; i < p_fun->npts; i++)
+               freeNode(p_fun->pt[i]);
+            break;
     }
 
     delete p;
@@ -360,6 +395,7 @@ int main(int argc, char *argv[]) {
     generated_code = fopen(argv[2], "w");
     yyparse();
     fclose(yyin);
-    fclose(out_graph);
+    // fclose(out_graph);
+    fclose(generated_code);
     return 0;
 }
