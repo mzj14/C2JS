@@ -22,6 +22,8 @@ vector<string> module;
 
 FILE *generated_code;
 
+#define UNIT_INDENT 2
+
 // set js module for require module statements
 void setModuleInfo(string container_name, string module_name);
 
@@ -32,11 +34,11 @@ string getModuleInfo();
 void codeGenFun(funNodeType* p);
 
 // return the code of a block
-string codeGenLis(lisNodeType* p);
+string codeGenLis(lisNodeType* p, int indent_level);
 
 // return the code of a statement
 // note that a statement could also be a block
-string codeGenSta(staNodeType* p);
+string codeGenSta(staNodeType* p, int indent_level);
 
 // return the code of a expression
 // note that an expression could also be an id, int, char or string
@@ -154,7 +156,7 @@ string codeGenOpr(nodeType *p) {
     return ans;
 }
 
-string codeGenSta(staNodeType* p) {
+string codeGenSta(staNodeType* p, int indent_level) {
     // cout << "in the statement function" << endl;
     // cout << "p->mark = " << p->mark << endl;
     string ans = "";
@@ -163,15 +165,15 @@ string codeGenSta(staNodeType* p) {
             ans = "break;";
             break;
         case WHILE:
-            ans = "while (" + codeGenOpr(p->pt[0]) + ")\n" + codeGenLis(p->pt[1]);
+            ans = "while (" + codeGenOpr(p->pt[0]) + ") " + codeGenLis(p->pt[1], indent_level + 1);
             break;
         case IF:
-            ans = "if (" + codeGenOpr(p->pt[0]) + ")\n" + codeGenLis(p->pt[1]);
+            ans = "if (" + codeGenOpr(p->pt[0]) + ") " + codeGenLis(p->pt[1], indent_level + 1);
             break;
         case ELSE:
-            cout << "else statement" << endl;
-            ans = "if (" + codeGenOpr(p->pt[0]) + ")\n"
-                  + codeGenLis(p->pt[1]) + "\nelse\n" + codeGenLis(p->pt[2]);
+            // cout << "else statement" << endl;
+            ans = "if (" + codeGenOpr(p->pt[0]) + ") "
+                  + codeGenLis(p->pt[1], indent_level + 1) + " else " + codeGenLis(p->pt[2], indent_level + 1);
             break;
         case GETS:
             // cout << "gets statement" << endl;
@@ -183,8 +185,8 @@ string codeGenSta(staNodeType* p) {
             ans = "return " + codeGenOpr(p->pt[0]) + ";";
             break;
         case DECLARE_ARRAY:
-            // cout << "declare array statement" << endl;
-            if (p->pt[0]->type == typeChr) {
+            cout << "declare array statement" << endl;
+            if (((typNodeType*)(p->pt[0]))->value == charType) {
                 ans = "var " + codeGenId(p->pt[1]) + " = " + "\";";
             }
             break;
@@ -200,7 +202,7 @@ string codeGenSta(staNodeType* p) {
             }
             break;
         case PRINTF:
-            cout << "printf statement" << endl;
+            // cout << "printf statement" << endl;
             string param = codeGenStr(p->pt[0]);
             if (param[param.length() - 1] == '\n') {
                 param = param.substr(0, param.length() - 1);
@@ -208,16 +210,20 @@ string codeGenSta(staNodeType* p) {
             ans = "console.log(" + param + ");";
             break;
     }
+    ans.insert(0, indent_level * UNIT_INDENT, ' ');
     return ans;
 }
 
-string codeGenLis(lisNodeType* p) {
-    string ans = "{\n";
-    cout << "totally " << p->nsts << " statements." << endl;
+string codeGenLis(lisNodeType* p, int indent_level) {
+    string ans = "";
+    ans += "{\n";
+    // cout << "totally " << p->nsts << " statements." << endl;
     for (int i = 0; i < p->nsts; i++) {
         cout << "get every statement" << endl;
-        ans += codeGenSta(p->st[i]) + "\n";
+        ans += codeGenSta(p->st[i], indent_level) + "\n";
     }
+    // ans.insert(0, (indent_level - 1) * UNIT_INDENT, ' ');
+    ans.insert(ans.length(), (indent_level - 1) * UNIT_INDENT, ' ');
     ans += "}";
     return ans;
 }
@@ -227,7 +233,7 @@ void codeGenFun(funNodeType* p) {
     string ans = "function ";
     ans += codeGenId(p->pt[1]);
     ans += "()";
-    ans += codeGenLis(p->pt[2]);
+    ans += codeGenLis(p->pt[2], 1);
     ans.insert(0, getModuleInfo());
     ans += "\nmain();";
     fwrite(ans.c_str(), sizeof(char), ans.length(), generated_code);

@@ -5,6 +5,8 @@
 //TODO: refactor the yyerror function to avoid compiler warning
 //TODO: rename the ex function to make code more semantic
 //TODO: modify the command line option to support visualizing AST and generating code
+//TODO: the code constructor function are much alike, reduce the redundances
+
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
