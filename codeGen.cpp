@@ -188,6 +188,8 @@ string codeGenSta(staNodeType* p, int indent_level) {
             cout << "declare array statement" << endl;
             if (((typNodeType*)(p->pt[0]))->value == charType) {
                 ans = "var " + codeGenId(p->pt[1]) + " = " + "\";";
+            } else {
+                ans = "var " + codeGenId(p->pt[1]) + " = " + "new Array(" + codeGenInt(p->pt[2]) + ");";
             }
             break;
         case DECLARE:
