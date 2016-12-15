@@ -17,10 +17,18 @@ double Calc(char str[])
     stOp[++top2] = '#';
     str[n++] = '#';
 
-        if (str[i]==' ' || str[i] == '\n' || str[i] == '\t') {
-            continue;
-        }
+    if (str[i]==' ' || str[i] == '\n' || str[i] == '\t') {
+        continue;
+    }
 
+    if (isdigit(str[i]))
+    {
+        int n = sscanf(str+i,"%lf",&tmp);
+        stDit[++top1] = tmp;
+        while(isdigit(str[i+1]) || str[i+1] == '.' ) {
+            i++;
+        }
+    }
 
     return stDit[top1];
 }

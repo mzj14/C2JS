@@ -167,6 +167,10 @@ statement:
         | WHILE '(' expr ')' '{' statement_list '}'                               { $$ = sta(WHILE, 2, $3, $6); }
         | IF '(' expr ')' '{' statement_list '}' %prec IFX                        { $$ = sta(IF, 2, $3, $6); }
         | IF '(' expr ')' '{' statement_list '}' ELSE '{' statement_list '}'      { $$ = sta(ELSE, 3, $3, $6, $10); }  // IF-ELSE is prior to the IF statement
+        | INC_OP expr ';'                                                            { $$ = sta(INC_OP_LEFT, 1, $2);  }
+        | DEC_OP expr ';'                                                            { $$ = sta(DEC_OP_LEFT, 1, $2);  }
+        | expr INC_OP ';'                                                            { $$ = sta(INC_OP_RIGHT, 1, $1);  }
+        | expr DEC_OP ';'                                                            { $$ = sta(DEC_OP_RIGHT, 1, $1);  }
         ;
 
 expr_list:
@@ -183,8 +187,7 @@ expr:
         | '-' expr %prec UMINUS                         { $$ = opr(UMINUS, 1, $2); }
         | STRLEN '(' IDENTIFIER ')'                     { $$ = opr(STRLEN, 1, id($3)); }
         | IDENTIFIER '(' expr_list ')'                  { $$ = opr(IDENTIFIER, 2, id($1), $3); }
-        | IDENTIFIER '[' INTEGER ']'                    { $$ = opr('[', 2, id($1), conInt($3)); }
-        | IDENTIFIER '[' IDENTIFIER ']'                 { $$ = opr('[', 2, id($1), id($3)); }
+        | IDENTIFIER '[' expr ']'                       { $$ = opr('[', 2, id($1), $3); }
         | expr '+' expr                                 { $$ = opr('+', 2, $1, $3); }
         | expr '-' expr                                 { $$ = opr('-', 2, $1, $3); }
         | expr '*' expr                                 { $$ = opr('*', 2, $1, $3); }

@@ -197,6 +197,18 @@ string codeGenSta(staNodeType* p, int indent_level) {
     // cout << "p->mark = " << p->mark << endl;
     string ans = "";
     switch (p->mark) {
+        case INC_OP_LEFT:
+            ans = "++" + codeGenOpr(p->pt[0]) + ";";
+            break;
+        case DEC_OP_LEFT:
+            ans = "--" + codeGenOpr(p->pt[0]) + ";";
+            break;
+        case INC_OP_RIGHT:
+            ans = codeGenOpr(p->pt[0]) + "++;";
+            break;
+        case DEC_OP_RIGHT:
+            ans = codeGenOpr(p->pt[0]) + "--;";
+            break;
         case IDENTIFIER:
             ans = codeGenId(p->pt[0]) + "(" + codeGenEps(p->pt[1]) + ");";
             break;
