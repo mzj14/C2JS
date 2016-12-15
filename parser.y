@@ -104,7 +104,7 @@ program:
         ;
 
 function:
-        type_name IDENTIFIER '(' ')' statement          { $$ = fun(3, $1, id($2), $5); }
+        type_name IDENTIFIER '(' ')' '{' statement_list '}'         { $$ = fun(3, $1, id($2), $6); }
         ;
 
 type_name:
@@ -118,19 +118,18 @@ statement_list:
         ;
 
 statement:
-          BREAK ';'                                     { $$ = sta(BREAK, 0); }
-        | RETURN expr ';'                               { $$ = sta(RETURN, 1, $2); }
-        | PRINTF '(' STRING ')' ';'                     { $$ = sta(PRINTF, 1, conStr($3)); }
-        | PRINTF '(' STRING ',' expr ')' ';'            { $$ = sta(PRINTF, 2, conStr($3), $5); }
-        | GETS '(' IDENTIFIER ')' ';'                   { $$ = sta(GETS, 1, id($3)); }
-        | IDENTIFIER '=' expr ';'                       { $$ = sta('=', 2, id($1), $3); }
-        | IDENTIFIER '[' expr ']' '=' expr ';'          { $$ = sta('=', 3, id($1), $3, $6); }
-        | type_name IDENTIFIER '[' INTEGER ']' ';'      { $$ = sta(DECLARE_ARRAY, 3, $1, id($2), conInt($4)); }
-        | type_name IDENTIFIER '=' expr ';'             { $$ = sta(DECLARE, 3, $1, id($2), $4); }
-        | WHILE '(' expr ')' statement_list             { $$ = sta(WHILE, 2, $3, $5); }
-        | IF '(' expr ')' statement %prec IFX           { $$ = sta(IF, 2, $3, $5); }
-        | IF '(' expr ')' statement ELSE statement      { $$ = sta(ELSE, 3, $3, $5, $7); }  // IF-ELSE is prior to the IF statement
-        | '{' statement_list '}'                        { $$ = $2; }
+          BREAK ';'                                                               { $$ = sta(BREAK, 0); }
+        | RETURN expr ';'                                                         { $$ = sta(RETURN, 1, $2); }
+        | PRINTF '(' STRING ')' ';'                                               { $$ = sta(PRINTF, 1, conStr($3)); }
+        | PRINTF '(' STRING ',' expr ')' ';'                                      { $$ = sta(PRINTF, 2, conStr($3), $5); }
+        | GETS '(' IDENTIFIER ')' ';'                                             { $$ = sta(GETS, 1, id($3)); }
+        | IDENTIFIER '=' expr ';'                                                 { $$ = sta('=', 2, id($1), $3); }
+        | IDENTIFIER '[' expr ']' '=' expr ';'                                    { $$ = sta('=', 3, id($1), $3, $6); }
+        | type_name IDENTIFIER '[' INTEGER ']' ';'                                { $$ = sta(DECLARE_ARRAY, 3, $1, id($2), conInt($4)); }
+        | type_name IDENTIFIER '=' expr ';'                                       { $$ = sta(DECLARE, 3, $1, id($2), $4); }
+        | WHILE '(' expr ')' '{' statement_list '}'                               { $$ = sta(WHILE, 2, $3, $6); }
+        | IF '(' expr ')' '{' statement_list '}' %prec IFX                        { $$ = sta(IF, 2, $3, $6); }
+        | IF '(' expr ')' '{' statement_list '}' ELSE '{' statement_list '}'      { $$ = sta(ELSE, 3, $3, $6, $10); }  // IF-ELSE is prior to the IF statement
         ;
 
 expr:
