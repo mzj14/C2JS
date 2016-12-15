@@ -147,7 +147,7 @@ string codeGenOpr(nodeType *p) {
                     ans = codeGenId(pt->op[0]) + ".length";
                     break;
                 case UMINUS:
-                    ans = "-" + codeGenOpr(pt->op[0]) + ";";
+                    ans = "-" + codeGenOpr(pt->op[0]);
             }
             break;
     }
@@ -196,7 +196,7 @@ string codeGenSta(staNodeType* p) {
             if (p->npts == 2) {
                 ans = codeGenId(p->pt[0]) + " = " + codeGenOpr(p->pt[1]) + ";";
             } else {
-                ans = codeGenId(p->pt[0]) + "[" + codeGenOpr(p->pt[1]) + "] = " + codeGenOpr(p->pt[1]) + ";";
+                ans = codeGenId(p->pt[0]) + "[" + codeGenOpr(p->pt[1]) + "] = " + codeGenOpr(p->pt[2]) + ";";
             }
             break;
         case PRINTF:
@@ -218,7 +218,7 @@ string codeGenLis(lisNodeType* p) {
         cout << "get every statement" << endl;
         ans += codeGenSta(p->st[i]) + "\n";
     }
-    ans += "}\n";
+    ans += "}";
     return ans;
 }
 
@@ -229,7 +229,7 @@ void codeGenFun(funNodeType* p) {
     ans += "()";
     ans += codeGenLis(p->pt[2]);
     ans.insert(0, getModuleInfo());
-    ans += "main();";
+    ans += "\nmain();";
     fwrite(ans.c_str(), sizeof(char), ans.length(), generated_code);
     return;
 }
