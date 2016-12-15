@@ -91,11 +91,12 @@ string codeGenInt(intNodeType *p) {
 string codeGenDbl(dblNodeType *p) {
     stringstream ss;
     ss << p->value;
+    cout << ss.str() << endl;
+    cout << p->value << endl;
     return ss.str();
 }
 
 string codeGenChr(chrNodeType *p) {
-    cout << "I am going to representing the char" << endl;
     return "'" + chr[p->i] + "'";
 }
 
@@ -146,6 +147,18 @@ string codeGenOpr(nodeType *p) {
                     ans += pt->oper;
                     ans += " " + codeGenOpr(pt->op[1]);
                     break;
+                case INC_OP_LEFT:
+                    ans = "++" + codeGenOpr(pt->op[0]);
+                    break;
+                case DEC_OP_LEFT:
+                    ans = "--" + codeGenOpr(pt->op[0]);
+                    break;
+                case INC_OP_RIGHT:
+                    ans = codeGenOpr(pt->op[0]) + "++";
+                    break;
+                case DEC_OP_RIGHT:
+                    ans = codeGenOpr(pt->op[0]) + "--";
+                    break;
                 case EQ_OP:
                     ans = codeGenOpr(pt->op[0]) + " == " + codeGenOpr(pt->op[1]);
                     break;
@@ -187,6 +200,9 @@ string codeGenSta(staNodeType* p, int indent_level) {
         case IDENTIFIER:
             ans = codeGenId(p->pt[0]) + "(" + codeGenEps(p->pt[1]) + ");";
             break;
+        case CONTINUE:
+            ans = "continue;";
+            break;
         case BREAK:
             ans = "break;";
             break;
@@ -214,14 +230,18 @@ string codeGenSta(staNodeType* p, int indent_level) {
         case DECLARE_ARRAY:
             cout << "declare array statement" << endl;
             if (((typNodeType*)(p->pt[0]))->value == charType) {
-                ans = "var " + codeGenId(p->pt[1]) + " = " + "\";";
+                ans = "var " + codeGenId(p->pt[1]) + " = " + "\'\';";
             } else {
                 ans = "var " + codeGenId(p->pt[1]) + " = " + "new Array(" + codeGenInt(p->pt[2]) + ");";
             }
             break;
         case DECLARE:
             // cout << "declare statement" << endl;
-            ans = "var " + codeGenId(p->pt[1]) + " = " + codeGenOpr(p->pt[2]) + ";";
+            if (p->npts == 3) {
+                ans = "var " + codeGenId(p->pt[1]) + " = " + codeGenOpr(p->pt[2]) + ";";
+            } else {
+                ans = "var " + codeGenId(p->pt[1]) + " = undefined;";
+            }
             break;
         case '=':
             if (p->npts == 2) {

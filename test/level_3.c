@@ -28,20 +28,26 @@ double Calc(char str[])
 {
     double stDit[300];
     char stOp[300];
-    int top1,top2;
+    int top1;
+    int top2;
 
-    double x,y,tmp;
+    double x;
+    double y;
+    double tmp;
     char op;
-    int i,n = strlen(str);
+    int i;
+    int n = strlen(str);
 
-    top1 = top2 = -1;
+    top1 = -1;
+    top2 = -1;
     stOp[++top2] = '#';
     str[n++] = '#';
 
     for(i=0; i < n; ++i)
     {
-        if (str[i]==' ' || str[i] == '\n' || str[i] == '\t')
+        if (str[i]==' ' || str[i] == '\n' || str[i] == '\t') {
             continue;
+        }
         if (isdigit(str[i]))                //数字
         {
             int n = sscanf(str+i,"%lf",&tmp);
@@ -50,10 +56,10 @@ double Calc(char str[])
                 i ++;
             }
         }
-        else if(str[i] == '(') {            // (
+        if(str[i] == '(') {            // (
             stOp[++top2] = str[i];
         }
-        else if(str[i] == ')') {            // )
+        if (str[i] == ')') {            // )
             while(stOp[top2] != '(')  {
                y = stDit[top1--];
                x = stDit[top1--];
@@ -66,8 +72,9 @@ double Calc(char str[])
         {
             while (Priority(stOp[top2]) >= Priority(str[i]))//如果操作栈顶的操作符优先级高，则作+-*/运算
             {
-               if (str[i]=='#' && stOp[top2]=='#')
-                  return stDit[top1];
+               if (str[i]=='#' && stOp[top2]=='#') {
+                   return stDit[top1];
+               }
                y = stDit[top1--];
                x = stDit[top1--];
                op = stOp[top2--];

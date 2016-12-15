@@ -33,6 +33,7 @@ vector<string> chr;
 
 %%
 "break"			                    { ECHO; return(BREAK); }
+"continue"                          { ECHO; return(CONTINUE); }
 "char"			                    { ECHO; yylval.iType = charType; return(CHAR); }
 "else"			                    { ECHO; return(ELSE); }
 "if"			                    { ECHO; return(IF); }
@@ -49,13 +50,15 @@ vector<string> chr;
 '(\\.|[^\\'])+'	                    { ECHO; yylval.sIndex = getChrIndex(yytext); return(CHARACTER); }
 \"(\\.|[^\\"])*\"	                { ECHO; yylval.sIndex = getStrIndex(yytext); return(STRING); }
 
-{D}*"."{D}+                         { ECHO; yylval.dValue = atof(yytext); return(DOUBLE_NUM); }
+{D}*"."{D}+                         { ECHO; yylval.dValue = atof(yytext); /* cout << yylval.dValue << endl; */ return(DOUBLE_NUM); }
 {D}+"."{D}*                         { ECHO; yylval.dValue = atof(yytext); return(DOUBLE_NUM); }
 
 "&&"			                    { ECHO; return(AND_OP); }
 "||"			                    { ECHO; return(OR_OP); }
 "=="			                    { ECHO; return(EQ_OP); }
 "!="			                    { ECHO; return(NE_OP); }
+"++"			                    { ECHO; return(INC_OP); }
+"--"			                    { ECHO; return(DEC_OP); }
 ";"			                        { ECHO; return(';'); }
 "{"		                            { ECHO; return('{'); }
 "}"		                            { ECHO; return('}'); }

@@ -81,9 +81,13 @@ void exNode
                 case charType:
                     sprintf(s, "char");
                     break;
+                case doubleType:
+                    sprintf(s, "double");
+                    break;
             }
             break;
         case typeInt:  sprintf (word, "integer(%d)", ((intNodeType*)p)->value); break;
+        case typeDbl:  sprintf (word, "double(%f)", ((dblNodeType*)p)->value); break;
         case typeChr:  sprintf (word, "character(%s)", chr[((chrNodeType*)p)->i]); break;
         case typeStr:  sprintf (word, "string(%s)", str[((strNodeType*)p)->i].c_str()); break;
         case typeId :  sprintf (word, "id(%s)", sym[((idNodeType*)p)->i].c_str()); break;

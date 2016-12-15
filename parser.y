@@ -103,9 +103,10 @@ int yylex(void);
 %token <sIndex> STRING
 %token <sIndex> IDENTIFIER
 
+%token INC_OP DEC_OP INC_OP_LEFT INC_OP_RIGHT DEC_OP_LEFT DEC_OP_RIGHT
 %token AND_OP OR_OP
 %token DECLARE DECLARE_ARRAY
-%token WHILE IF PRINTF BREAK RETURN GETS STRLEN
+%token WHILE IF PRINTF BREAK RETURN GETS STRLEN CONTINUE
 
 /* no associativity */
 %nonassoc IFX
@@ -152,6 +153,7 @@ statement_list:
 
 statement:
           BREAK ';'                                                               { $$ = sta(BREAK, 0); }
+        | CONTINUE ';'                                                            { $$ = sta(CONTINUE, 0); }
         | RETURN expr ';'                                                         { $$ = sta(RETURN, 1, $2); }
         | PRINTF '(' STRING ')' ';'                                               { $$ = sta(PRINTF, 1, conStr($3)); }
         | PRINTF '(' STRING ',' expr_list ')' ';'                                 { $$ = sta(PRINTF, 2, conStr($3), $5); }
@@ -161,6 +163,7 @@ statement:
         | IDENTIFIER '[' expr ']' '=' expr ';'                                    { $$ = sta('=', 3, id($1), $3, $6); }
         | type_name IDENTIFIER '[' INTEGER ']' ';'                                { $$ = sta(DECLARE_ARRAY, 3, $1, id($2), conInt($4)); }
         | type_name IDENTIFIER '=' expr ';'                                       { $$ = sta(DECLARE, 3, $1, id($2), $4); }
+        | type_name IDENTIFIER ';'                                                { $$ = sta(DECLARE, 2, $1, id($2)); }
         | WHILE '(' expr ')' '{' statement_list '}'                               { $$ = sta(WHILE, 2, $3, $6); }
         | IF '(' expr ')' '{' statement_list '}' %prec IFX                        { $$ = sta(IF, 2, $3, $6); }
         | IF '(' expr ')' '{' statement_list '}' ELSE '{' statement_list '}'      { $$ = sta(ELSE, 3, $3, $6, $10); }  // IF-ELSE is prior to the IF statement
@@ -188,6 +191,10 @@ expr:
         | expr '/' expr                                 { $$ = opr('/', 2, $1, $3); }
         | expr '<' expr                                 { $$ = opr('<', 2, $1, $3); }
         | expr '>' expr                                 { $$ = opr('>', 2, $1, $3); }
+        | INC_OP expr                                   { $$ = opr(INC_OP_LEFT, 1, $2);  }
+        | DEC_OP expr                                   { $$ = opr(DEC_OP_LEFT, 1, $2);  }
+        | expr INC_OP                                   { $$ = opr(INC_OP_RIGHT, 1, $1);  }
+        | expr DEC_OP                                   { $$ = opr(DEC_OP_RIGHT, 1, $1);  }
         | expr NE_OP expr                               { $$ = opr(NE_OP, 2, $1, $3); }
         | expr EQ_OP expr                               { $$ = opr(EQ_OP, 2, $1, $3); }
         | expr AND_OP expr                              { $$ = opr(AND_OP, 2, $1, $3); }
@@ -227,9 +234,9 @@ nodeType *conInt(int value) {
 }
 
 nodeType *conDbl(double value) {
-    intNodeType *p;
+    dblNodeType *p;
 
-    p = new intNodeType();
+    p = new dblNodeType();
 
     /* copy information */
     /* set the new node to constant node */
