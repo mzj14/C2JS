@@ -52,7 +52,7 @@ nodeType *conTyp(typeEnum value);
 nodeType *conInt(int value);
 
 // construct a char type node, return the pointer
-nodeType *conChr(char value);
+nodeType *conChr(int i);
 
 // construct a string type node, return the pointer
 nodeType *conStr(int i);
@@ -88,14 +88,13 @@ int yylex(void);
 %union {
     typeEnum iType;                  /* type category */
     int iValue;                     /* integer value */
-    char iChar;                     /* char value */
     int sIndex;                     /* sym and str table index */
     nodeType *nPtr;                 /* node pointer */
 };
 
 %token <iValue> INTEGER
 %token <iType> INT CHAR
-%token <iChar> CHARACTER
+%token <sIndex> CHARACTER
 %token <sIndex> STRING
 %token <sIndex> IDENTIFIER
 
@@ -168,7 +167,7 @@ expr_list:
 
 expr:
           INTEGER                                       { $$ = conInt($1); }
-        | CHAR                                          { $$ = conChr($1); }
+        | CHARACTER                                          { $$ = conChr($1); }
         | STRING                                        { $$ = conStr($1); }
         | IDENTIFIER                                    { $$ = id($1); }
         | '-' expr %prec UMINUS                         { $$ = opr(UMINUS, 1, $2); }
@@ -220,7 +219,7 @@ nodeType *conInt(int value) {
     return p;
 }
 
-nodeType *conChr(char value) {
+nodeType *conChr(int i) {
     chrNodeType *p;
 
     p = new chrNodeType();
@@ -230,7 +229,7 @@ nodeType *conChr(char value) {
     p->type = typeChr;
 
     /* set constant node value */
-    p->value = value;
+    p->i = i;
 
     return p;
 }

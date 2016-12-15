@@ -44,7 +44,7 @@ public:
 class chrNodeType : public nodeType
 {
 public:
-    char value;                     /* value of char */
+    int i;                           /* index to global chr vector */
 };
 
 /* strings */
@@ -120,6 +120,9 @@ extern vector<string> sym;
 
 // vector for string
 extern vector<string> str;
+
+// vector for char
+extern vector<string> chr;
 
 // output file for AST visualization
 extern FILE *out_graph;

@@ -23,8 +23,12 @@ int getIDIndex(char *);
 // store matched string in str vector, return the index in vector
 int getStrIndex(char *);
 
+// store matched character in chr vector, return the index in vector
+int getChrIndex(char *);
+
 vector<string> sym;
 vector<string> str;
+vector<string> chr;
 %}
 
 %%
@@ -41,8 +45,8 @@ vector<string> str;
 
 {L}({L}|{D})*		                { ECHO; yylval.sIndex = getIDIndex(yytext); return(IDENTIFIER); }
 {D}+		                        { ECHO; yylval.iValue = atoi(yytext); return(INTEGER); }
-L?'(\\.|[^\\'])+'	                { ECHO; yylval.iChar = *yytext; return(CHARACTER); }
-L?\"(\\.|[^\\"])*\"	                { ECHO; yylval.sIndex = getStrIndex(yytext); return(STRING); }
+'(\\.|[^\\'])+'	                    { ECHO; yylval.sIndex = getChrIndex(yytext); return(CHARACTER); }
+\"(\\.|[^\\"])*\"	                { ECHO; yylval.sIndex = getStrIndex(yytext); return(STRING); }
 
 "&&"			                    { ECHO; return(AND_OP); }
 "||"			                    { ECHO; return(OR_OP); }
@@ -72,6 +76,8 @@ L?\"(\\.|[^\\"])*\"	                { ECHO; yylval.sIndex = getStrIndex(yytext);
 int getStrIndex(char* text) {
     string textStr(text);
 
+    textStr = textStr.substr(1, textStr.length() - 2);
+
     str.push_back(textStr);
 
     return (int)str.size() - 1;
@@ -92,6 +98,27 @@ int getIDIndex(char* text) {
     }
 
     sym.push_back(textStr);
+
+    return i;
+}
+
+int getChrIndex(char* text) {
+    int i = 0;
+    string textStr(text);
+
+    textStr = textStr.substr(1, textStr.length() - 2);
+
+    int chr_size = (int)chr.size();
+
+    while (i < chr_size) {
+        if (chr[i] != textStr) {
+            i++;
+        } else {
+        return i;
+        }
+    }
+
+    chr.push_back(textStr);
 
     return i;
 }

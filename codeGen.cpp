@@ -89,13 +89,12 @@ string codeGenInt(intNodeType *p) {
 }
 
 string codeGenChr(chrNodeType *p) {
-    ostringstream stream;
-    stream << p->value;
-    return "\'" + stream.str() + "\'";
+    cout << "I am going to representing the char" << endl;
+    return "'" + chr[p->i] + "'";
 }
 
 string codeGenStr(strNodeType *p) {
-    return str[p->i];
+    return "\"" + str[p->i] + "\"";
 }
 
 string codeGenId(idNodeType *p) {
@@ -225,8 +224,8 @@ string codeGenSta(staNodeType* p, int indent_level) {
         case PRINTF:
             // cout << "printf statement" << endl;
             string param = codeGenStr(p->pt[0]);
-            if (param[param.length() - 1] == '\n') {
-                param = param.substr(0, param.length() - 1);
+            if (param.substr(param.length() - 3, 2) == "\\n") {
+                param.replace(param.length() - 3, 2, "");
             }
             ans = "console.log(" + param + ");";
             break;
