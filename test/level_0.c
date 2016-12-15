@@ -17,19 +17,43 @@ double Calc(char str[])
     stOp[++top2] = '#';
     str[n++] = '#';
 
-    if (str[i]==' ' || str[i] == '\n' || str[i] == '\t') {
-        continue;
-    }
-
-    if (isdigit(str[i]))
-    {
-        int n = sscanf(str+i,"%lf",&tmp);
-        stDit[++top1] = tmp;
-        while(isdigit(str[i+1]) || str[i+1] == '.' ) {
-            i++;
+        if (str[i]==' ' || str[i] == '\n' || str[i] == '\t') {
+            continue;
         }
-    }
-
+        if (isdigit(str[i]))
+        {
+            int n = sscanf(str+i,"%lf",&tmp);
+            stDit[++top1] = tmp;
+            while(isdigit(str[i+1]) || str[i+1] == '.' ) {
+                i ++;
+            }
+        }
+        if(str[i] == '(') {
+            stOp[++top2] = str[i];
+        }
+        if (str[i] == ')') {
+            while(stOp[top2] != '(')  {
+                y = stDit[top1--];
+                x = stDit[top1--];
+                op = stOp[top2--];
+                stDit[++top1] = Operate(x,y,op);
+            }
+            top2 --;
+        }
+        else
+        {
+            while (Priority(stOp[top2]) >= Priority(str[i]))
+            {
+                if (str[i]=='#' && stOp[top2]=='#') {
+                    return stDit[top1];
+                }
+                y = stDit[top1--];
+                x = stDit[top1--];
+                op = stOp[top2--];
+                stDit[++top1] = Operate(x,y,op);
+            }
+            stOp[++top2] = str[i];
+        }
     return stDit[top1];
 }
 

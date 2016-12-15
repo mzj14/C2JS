@@ -59,6 +59,8 @@ vector<string> chr;
 "!="			                    { ECHO; return(NE_OP); }
 "++"			                    { ECHO; return(INC_OP); }
 "--"			                    { ECHO; return(DEC_OP); }
+">="                                { ECHO; return(GE_OP); }
+"<="			                    { ECHO; return(LE_OP); }
 ";"			                        { ECHO; return(';'); }
 "{"		                            { ECHO; return('{'); }
 "}"		                            { ECHO; return('}'); }

@@ -159,6 +159,12 @@ string codeGenOpr(nodeType *p) {
                 case DEC_OP_RIGHT:
                     ans = codeGenOpr(pt->op[0]) + "--";
                     break;
+                case LE_OP:
+                    ans = codeGenOpr(pt->op[0]) + " <= " + codeGenOpr(pt->op[1]);
+                    break;
+                case GE_OP:
+                    ans = codeGenOpr(pt->op[0]) + " >= " + codeGenOpr(pt->op[1]);
+                    break;
                 case EQ_OP:
                     ans = codeGenOpr(pt->op[0]) + " == " + codeGenOpr(pt->op[1]);
                     break;
