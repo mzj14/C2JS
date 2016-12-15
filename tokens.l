@@ -47,6 +47,7 @@ vector<string> chr;
 "printf"                            { ECHO; return(PRINTF); }
 "gets"                              { ECHO; return(GETS); }
 "strlen"                            { ECHO; return(STRLEN); }
+"isdigit"                           { ECHO; return(ISDIGIT); }
 "for"                               { ECHO; return(FOR); }
 
 {L}({L}|{D})*		                { ECHO; yylval.sIndex = getIDIndex(yytext); return(IDENTIFIER); }

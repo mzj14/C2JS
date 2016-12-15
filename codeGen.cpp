@@ -186,6 +186,9 @@ string codeGenOpr(nodeType *p) {
                 case STRLEN:
                     ans = codeGenId(pt->op[0]) + ".length";
                     break;
+                case ISDIGIT:
+                    ans = "!isNaN(parseInt(" + codeGenOpr(pt->op[0]) + "))";
+                    break;
                 case UMINUS:
                     ans = "-" + codeGenOpr(pt->op[0]);
                     break;
