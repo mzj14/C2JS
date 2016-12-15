@@ -37,6 +37,7 @@ vector<string> chr;
 "else"			                    { ECHO; return(ELSE); }
 "if"			                    { ECHO; return(IF); }
 "int"			                    { ECHO; yylval.iType = intType; return(INT); }
+"double"                            { ECHO; yylval.iType = doubleType; return(DOUBLE); }
 "return"		                    { ECHO; return(RETURN); }
 "while"			                    { ECHO; return(WHILE); }
 "printf"                            { ECHO; return(PRINTF); }
@@ -47,6 +48,9 @@ vector<string> chr;
 {D}+		                        { ECHO; yylval.iValue = atoi(yytext); return(INTEGER); }
 '(\\.|[^\\'])+'	                    { ECHO; yylval.sIndex = getChrIndex(yytext); return(CHARACTER); }
 \"(\\.|[^\\"])*\"	                { ECHO; yylval.sIndex = getStrIndex(yytext); return(STRING); }
+
+{D}*"."{D}+                         { ECHO; yylval.dValue = atof(yytext); return(DOUBLE_NUM); }
+{D}+"."{D}*                         { ECHO; yylval.dValue = atof(yytext); return(DOUBLE_NUM); }
 
 "&&"			                    { ECHO; return(AND_OP); }
 "||"			                    { ECHO; return(OR_OP); }
@@ -63,6 +67,7 @@ vector<string> chr;
 "-"			                        { ECHO; return('-'); }
 "+"			                        { ECHO; return('+'); }
 "*"                                 { ECHO; return('*'); }
+"/"                                 { ECHO; return('/'); }
 "<"			                        { ECHO; return('<'); }
 ">"			                        { ECHO; return('>'); }
 ","                                 { ECHO; return(','); }

@@ -88,6 +88,12 @@ string codeGenInt(intNodeType *p) {
     return ans;
 }
 
+string codeGenDbl(dblNodeType *p) {
+    stringstream ss;
+    ss << p->value;
+    return ss.str();
+}
+
 string codeGenChr(chrNodeType *p) {
     cout << "I am going to representing the char" << endl;
     return "'" + chr[p->i] + "'";
@@ -120,6 +126,9 @@ string codeGenOpr(nodeType *p) {
             break;
         case typeStr:
             ans = codeGenStr(p);
+            break;
+        case typeDbl:
+            ans = codeGenDbl(p);
             break;
         case typeId:
             ans = codeGenId(p);

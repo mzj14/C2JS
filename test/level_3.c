@@ -14,6 +14,7 @@ int Priority(char op)
     else
         return -1;
 }
+
 double Operate(double x,double y,char op)
 {
     if (op=='+') return x+y;

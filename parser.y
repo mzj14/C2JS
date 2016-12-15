@@ -51,6 +51,9 @@ nodeType *conTyp(typeEnum value);
 // construct a int type node, return the pointer
 nodeType *conInt(int value);
 
+// construct a int type node, return the pointer
+nodeType *conDbl(double value);
+
 // construct a char type node, return the pointer
 nodeType *conChr(int i);
 
@@ -89,11 +92,13 @@ int yylex(void);
     typeEnum iType;                  /* type category */
     int iValue;                     /* integer value */
     int sIndex;                     /* sym and str table index */
+    double dValue;                  /* double value */
     nodeType *nPtr;                 /* node pointer */
 };
 
 %token <iValue> INTEGER
-%token <iType> INT CHAR
+%token <iType> INT CHAR DOUBLE
+%token <dValue> DOUBLE_NUM
 %token <sIndex> CHARACTER
 %token <sIndex> STRING
 %token <sIndex> IDENTIFIER
@@ -137,6 +142,7 @@ param:
 type_name:
           INT                                           { $$ = conTyp($1); }
         | CHAR                                          { $$ = conTyp($1); }
+        | DOUBLE                                        { $$ = conTyp($1); }
         ;
 
 statement_list:
@@ -167,7 +173,8 @@ expr_list:
 
 expr:
           INTEGER                                       { $$ = conInt($1); }
-        | CHARACTER                                          { $$ = conChr($1); }
+        | DOUBLE_NUM                                    { $$ = conDbl($1); }
+        | CHARACTER                                     { $$ = conChr($1); }
         | STRING                                        { $$ = conStr($1); }
         | IDENTIFIER                                    { $$ = id($1); }
         | '-' expr %prec UMINUS                         { $$ = opr(UMINUS, 1, $2); }
@@ -212,6 +219,21 @@ nodeType *conInt(int value) {
     /* copy information */
     /* set the new node to constant node */
     p->type = typeInt;
+
+    /* set constant node value */
+    p->value = value;
+
+    return p;
+}
+
+nodeType *conDbl(double value) {
+    intNodeType *p;
+
+    p = new intNodeType();
+
+    /* copy information */
+    /* set the new node to constant node */
+    p->type = typeDbl;
 
     /* set constant node value */
     p->value = value;
