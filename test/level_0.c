@@ -17,10 +17,12 @@ double Calc(char str[])
     stOp[++top2] = '#';
     str[n++] = '#';
 
+    for(i=0; i < n; ++i)
+    {
         if (str[i]==' ' || str[i] == '\n' || str[i] == '\t') {
             continue;
         }
-        if (isdigit(str[i]))
+        if (isdigit(str[i]))                //数字
         {
             int n = sscanf(str+i,"%lf",&tmp);
             stDit[++top1] = tmp;
@@ -28,10 +30,10 @@ double Calc(char str[])
                 i ++;
             }
         }
-        if(str[i] == '(') {
+        if(str[i] == '(') {            // (
             stOp[++top2] = str[i];
         }
-        if (str[i] == ')') {
+        if (str[i] == ')') {            // )
             while(stOp[top2] != '(')  {
                 y = stDit[top1--];
                 x = stDit[top1--];
@@ -42,7 +44,7 @@ double Calc(char str[])
         }
         else
         {
-            while (Priority(stOp[top2]) >= Priority(str[i]))
+            while (Priority(stOp[top2]) >= Priority(str[i]))//如果操作栈顶的操作符优先级高，则作+-*/运算
             {
                 if (str[i]=='#' && stOp[top2]=='#') {
                     return stDit[top1];
@@ -52,8 +54,9 @@ double Calc(char str[])
                 op = stOp[top2--];
                 stDit[++top1] = Operate(x,y,op);
             }
-            stOp[++top2] = str[i];
+            stOp[++top2] = str[i];          //如果新操作符优先级高，str[i]进栈
         }
+    }
     return stDit[top1];
 }
 

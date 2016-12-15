@@ -227,6 +227,9 @@ string codeGenSta(staNodeType* p, int indent_level) {
         case WHILE:
             ans = "while (" + codeGenOpr(p->pt[0]) + ") " + codeGenLis(p->pt[1], indent_level + 1);
             break;
+        case FOR:
+            ans = "for (" + codeGenSta(p->pt[0], 0) + ", " + codeGenOpr(p->pt[1]) + ", " + codeGenSta(p->pt[2], 0) + ") " + codeGenLis(p->pt[3], indent_level + 1);
+            break;
         case IF:
             cout << "if statement" << endl;
             ans = "if (" + codeGenOpr(p->pt[0]) + ") " + codeGenLis(p->pt[1], indent_level + 1);

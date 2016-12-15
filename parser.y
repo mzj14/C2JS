@@ -106,7 +106,7 @@ int yylex(void);
 %token INC_OP DEC_OP INC_OP_LEFT INC_OP_RIGHT DEC_OP_LEFT DEC_OP_RIGHT LE_OP GE_OP
 %token AND_OP OR_OP
 %token DECLARE DECLARE_ARRAY
-%token WHILE IF PRINTF BREAK RETURN GETS STRLEN CONTINUE
+%token WHILE IF PRINTF BREAK RETURN GETS STRLEN CONTINUE FOR
 
 /* no associativity */
 %nonassoc IFX
@@ -147,13 +147,13 @@ type_name:
         ;
 
 statement_list:
-          statement                                     { $$ = lis(1, $1); }
+          statement                                    { $$ = lis(1, $1); }
         | statement statement_list                      { $$ = lis(1 + getStateNum($2), $1, $2); }
         ;
 
 statement:
-          BREAK ';'                                                               { $$ = sta(BREAK, 0); }
-        | CONTINUE ';'                                                            { $$ = sta(CONTINUE, 0); }
+          BREAK ';'                                                              { $$ = sta(BREAK, 0); }
+        | CONTINUE ';'                                                           { $$ = sta(CONTINUE, 0); }
         | RETURN expr ';'                                                         { $$ = sta(RETURN, 1, $2); }
         | PRINTF '(' STRING ')' ';'                                               { $$ = sta(PRINTF, 1, conStr($3)); }
         | PRINTF '(' STRING ',' expr_list ')' ';'                                 { $$ = sta(PRINTF, 2, conStr($3), $5); }
@@ -167,6 +167,7 @@ statement:
         | WHILE '(' expr ')' '{' statement_list '}'                               { $$ = sta(WHILE, 2, $3, $6); }
         | IF '(' expr ')' '{' statement_list '}' %prec IFX                        { $$ = sta(IF, 2, $3, $6); }
         | IF '(' expr ')' '{' statement_list '}' ELSE '{' statement_list '}'      { $$ = sta(ELSE, 3, $3, $6, $10); }  // IF-ELSE is prior to the IF statement
+        | FOR '(' statement expr ';' expr ')' '{' statement_list '}'              { $$ = sta(FOR, 4, $3, $4, $6, $9); }
         | INC_OP expr ';'                                                            { $$ = sta(INC_OP_LEFT, 1, $2);  }
         | DEC_OP expr ';'                                                            { $$ = sta(DEC_OP_LEFT, 1, $2);  }
         | expr INC_OP ';'                                                            { $$ = sta(INC_OP_RIGHT, 1, $1);  }
