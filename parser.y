@@ -39,6 +39,9 @@ nodeType *sta(int mark, int npts, ...);
 // construct a expression type node, return the pointer
 nodeType *opr(int oper, int nops, ...);
 
+// construct a expression list node, return the pointer
+nodeType *eps(int neps, ...);
+
 // construct a identifier type node, return the pointer
 nodeType *id(int i);
 
@@ -62,6 +65,9 @@ int getParamNum(nodeType* params);
 
 // get statement num of a block type
 int getStateNum(nodeType* p);
+
+// get expression num of a expression list
+int getExpNum(nodeType* p);
 
 // free the node of AST
 void freeNode(nodeType *p);
@@ -107,7 +113,7 @@ int yylex(void);
 %left '*' '/'
 %nonassoc UMINUS
 
-%type <nPtr> function type_name statement_list statement expr param_list param
+%type <nPtr> function type_name statement statement_list expr expr_list param param_list
 
 %%
 program:
@@ -143,7 +149,8 @@ statement:
           BREAK ';'                                                               { $$ = sta(BREAK, 0); }
         | RETURN expr ';'                                                         { $$ = sta(RETURN, 1, $2); }
         | PRINTF '(' STRING ')' ';'                                               { $$ = sta(PRINTF, 1, conStr($3)); }
-        | PRINTF '(' STRING ',' expr ')' ';'                                      { $$ = sta(PRINTF, 2, conStr($3), $5); }
+        | PRINTF '(' STRING ',' expr_list ')' ';'                                 { $$ = sta(PRINTF, 2, conStr($3), $5); }
+        | IDENTIFIER '(' expr_list ')' ';'                                        { $$ = sta(IDENTIFIER, 2, id($1), $3); }
         | GETS '(' IDENTIFIER ')' ';'                                             { $$ = sta(GETS, 1, id($3)); }
         | IDENTIFIER '=' expr ';'                                                 { $$ = sta('=', 2, id($1), $3); }
         | IDENTIFIER '[' expr ']' '=' expr ';'                                    { $$ = sta('=', 3, id($1), $3, $6); }
@@ -154,6 +161,11 @@ statement:
         | IF '(' expr ')' '{' statement_list '}' ELSE '{' statement_list '}'      { $$ = sta(ELSE, 3, $3, $6, $10); }  // IF-ELSE is prior to the IF statement
         ;
 
+expr_list:
+          expr                                                                    { $$ = eps(1, $1); }
+        | expr ',' expr_list                                                      { $$ = eps(1 + getExpNum($3), $1, $3); }
+        ;
+
 expr:
           INTEGER                                       { $$ = conInt($1); }
         | CHAR                                          { $$ = conChr($1); }
@@ -161,6 +173,7 @@ expr:
         | IDENTIFIER                                    { $$ = id($1); }
         | '-' expr %prec UMINUS                         { $$ = opr(UMINUS, 1, $2); }
         | STRLEN '(' IDENTIFIER ')'                     { $$ = opr(STRLEN, 1, id($3)); }
+        | IDENTIFIER '(' expr_list ')'                  { $$ = opr(IDENTIFIER, 2, id($1), $3); }
         | IDENTIFIER '[' INTEGER ']'                    { $$ = opr('[', 2, id($1), conInt($3)); }
         | IDENTIFIER '[' IDENTIFIER ']'                 { $$ = opr('[', 2, id($1), id($3)); }
         | expr '+' expr                                 { $$ = opr('+', 2, $1, $3); }
@@ -331,6 +344,39 @@ nodeType *par(int npts, ...) {
         p->pt.push_back(va_arg(ap, nodeType*));
 
     /* make ap to null */
+    va_end(ap);
+    return p;
+}
+
+int getExpNum(nodeType* exps) {
+    return ((epsNodeType*)exps)->neps;
+}
+
+nodeType *eps(int neps, ...) {
+    va_list ap;
+    epsNodeType *p;
+    int i;
+
+    p = new epsNodeType();
+
+    /* copy information */
+    /* set the new node to identifier node */
+    p->type = typeEps;
+
+    /* set neps */
+    p->neps = neps;
+
+    /* make ap be the pointer for the argument behind nops */
+    va_start(ap, neps);
+
+    p->ep.push_back(va_arg(ap, nodeType*));
+
+    if (neps > 1) {
+        epsNodeType* expression_list = va_arg(ap, epsNodeType*);
+        for (i = 1; i < neps; i++)
+            p->ep.push_back(expression_list->ep[i - 1]);
+    }
+
     va_end(ap);
     return p;
 }

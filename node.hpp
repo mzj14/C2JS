@@ -14,7 +14,7 @@ using namespace std;
 //TODO: rename lis(lists) to blk(block) to make code more semantic
 
 /* node types */
-typedef enum { typeTyp, typeInt, typeChr, typeStr, typeId, typeOpr, typeSta, typeLis, typeFun, typePar, typePrs } nodeEnum;
+typedef enum { typeTyp, typeInt, typeChr, typeStr, typeId, typeOpr, typeEps, typeSta, typeLis, typeFun, typePar, typePrs } nodeEnum;
 
 /* variable types */
 typedef enum { charType, intType } typeEnum;
@@ -68,6 +68,14 @@ public:
     int oper;                       /* operator */
     int nops;                       /* number of operands */
     vector<nodeType*> op;           /* operands, extended at runtime */
+};
+
+/* expression list */
+class epsNodeType : public nodeType
+{
+public:
+    int neps;                       /* number of expressions */
+    vector<nodeType*> ep;           /* expressions, extended at runtime */
 };
 
 /* statements */

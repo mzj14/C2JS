@@ -1,7 +1,5 @@
 int Priority(int x,char y,char op, char str[])
 {
-    if (op == 1) {
-        return 0;
-    }
+    stDit[top1] = Operate(x,y,op);
 }
 

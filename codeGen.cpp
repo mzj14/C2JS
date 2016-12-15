@@ -40,6 +40,9 @@ string codeGenLis(lisNodeType* p, int indent_level);
 // note that a statement could also be a block
 string codeGenSta(staNodeType* p, int indent_level);
 
+// return the code of a expression list
+string codeGenEps(epsNodeType* p);
+
 // return the code of a expression
 // note that an expression could also be an id, int, char or string
 string codeGenOpr(nodeType *p);
@@ -158,6 +161,10 @@ string codeGenOpr(nodeType *p) {
                     break;
                 case UMINUS:
                     ans = "-" + codeGenOpr(pt->op[0]);
+                    break;
+                case IDENTIFIER:
+                    ans = codeGenId(pt->op[0]) + "(" + codeGenEps(pt->op[1]) + ")";
+                    break;
             }
             break;
     }
@@ -169,6 +176,9 @@ string codeGenSta(staNodeType* p, int indent_level) {
     // cout << "p->mark = " << p->mark << endl;
     string ans = "";
     switch (p->mark) {
+        case IDENTIFIER:
+            ans = codeGenId(p->pt[0]) + "(" + codeGenEps(p->pt[1]) + ");";
+            break;
         case BREAK:
             ans = "break;";
             break;
@@ -222,6 +232,18 @@ string codeGenSta(staNodeType* p, int indent_level) {
             break;
     }
     ans.insert(0, indent_level * UNIT_INDENT, ' ');
+    return ans;
+}
+
+string codeGenEps(epsNodeType* p) {
+    string ans = "";
+    for (int i = 0; i < p->neps; i++) {
+        // cout << "get every param" << endl;
+        ans += codeGenOpr(p->ep[i]);
+        if (i != p->neps - 1) {
+            ans += ", ";
+        }
+    }
     return ans;
 }
 
