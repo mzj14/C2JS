@@ -100,7 +100,7 @@ int yylex(void);
 %token <iType> INT CHAR DOUBLE
 %token <dValue> DOUBLE_NUM
 %token <sIndex> CHARACTER
-%token <sIndex> STRING
+%token <sIndex> STRING COMMENT
 %token <sIndex> IDENTIFIER
 
 %token INC_OP DEC_OP INC_OP_LEFT INC_OP_RIGHT DEC_OP_LEFT DEC_OP_RIGHT LE_OP GE_OP
@@ -171,7 +171,8 @@ statement:
         | INC_OP expr ';'                                                            { $$ = sta(INC_OP_LEFT, 1, $2);  }
         | DEC_OP expr ';'                                                            { $$ = sta(DEC_OP_LEFT, 1, $2);  }
         | expr INC_OP ';'                                                            { $$ = sta(INC_OP_RIGHT, 1, $1);  }
-        | expr DEC_OP ';'                                                            { $$ = sta(DEC_OP_RIGHT, 1, $1);  }
+        | expr DEC_OP ';'                                                         { $$ = sta(DEC_OP_RIGHT, 1, $1);  }
+        | COMMENT                                                                 { $$ = sta(COMMENT, 1, conStr($1)); }
         ;
 
 expr_list:
