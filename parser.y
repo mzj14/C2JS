@@ -27,6 +27,12 @@ nodeType *fun(int npts, ...);
 // construct a block type node, return the pointer
 nodeType *lis(int nlis, ...);
 
+// construct a param list type node, return the pointer
+nodeType *prs(int npas, ...);
+
+// construct a param type node, return the pointer
+nodeType *par(int npts, ...);
+
 // construct a statement type node, return the pointer
 nodeType *sta(int mark, int npts, ...);
 
@@ -50,6 +56,9 @@ nodeType *conStr(int i);
 
 // show content of sym vector, used for debug
 void showSym(vector<string>& sym);
+
+// get param num of a param list
+int getParamNum(nodeType* params);
 
 // get statement num of a block type
 int getStateNum(nodeType* p);
@@ -98,7 +107,7 @@ int yylex(void);
 %left '*' '/'
 %nonassoc UMINUS
 
-%type <nPtr> function type_name statement_list statement expr
+%type <nPtr> function type_name statement_list statement expr param_list param
 
 %%
 program:
@@ -106,7 +115,18 @@ program:
         ;
 
 function:
-        type_name IDENTIFIER '(' ')' '{' statement_list '}'         { $$ = fun(3, $1, id($2), $6); }
+        type_name IDENTIFIER '(' param_list ')' '{' statement_list '}'         { $$ = fun(4, $1, id($2), $4, $7); }
+        | type_name IDENTIFIER '(' ')' '{' statement_list '}'                  { $$ = fun(3, $1, id($2), $6); }
+        ;
+
+param_list:
+          param                                                                { $$ = prs(1, $1); }
+        | param ',' param_list                                                 { $$ = prs(1 + getParamNum($3), $1, $3); }
+        ;
+
+param:
+        type_name IDENTIFIER                                                   { $$ = par(2, $1, id($2)); }
+        | type_name IDENTIFIER '[' ']'                                         { $$ = par(2, $1, id($2)); }
         ;
 
 type_name:
@@ -289,6 +309,32 @@ nodeType *sta(int mark, int npts, ...) {
     return p;
 }
 
+nodeType *par(int npts, ...) {
+    va_list ap;
+    parNodeType *p;
+    int i;
+
+    p = new parNodeType();
+
+    /* copy information */
+    /* set the new node to statement node */
+    p->type = typePar;
+
+    /* set npts */
+    p->npts = npts;
+
+    /* make ap be the pointer for the argument behind nops */
+    va_start(ap, npts);
+
+    /* add operand pointer(s) */
+    for (i = 0; i < npts; i++)
+        p->pt.push_back(va_arg(ap, nodeType*));
+
+    /* make ap to null */
+    va_end(ap);
+    return p;
+}
+
 int getStateNum(nodeType* list) {
     return ((lisNodeType*)list)->nsts;
 }
@@ -316,6 +362,39 @@ nodeType *lis(int nsts, ...) {
         lisNodeType* statement_list = va_arg(ap, lisNodeType*);
         for (i = 1; i < nsts; i++)
             p->st.push_back(statement_list->st[i - 1]);
+    }
+
+    va_end(ap);
+    return p;
+}
+
+int getParamNum(nodeType* params) {
+    return ((prsNodeType*)params)->npas;
+}
+
+nodeType *prs(int npas, ...) {
+    va_list ap;
+    prsNodeType *p;
+    int i;
+
+    p = new prsNodeType();
+
+    /* copy information */
+    /* set the new node to identifier node */
+    p->type = typePrs;
+
+    /* set nsts */
+    p->npas = npas;
+
+    /* make ap be the pointer for the argument behind nops */
+    va_start(ap, npas);
+
+    p->pa.push_back(va_arg(ap, nodeType*));
+
+    if (npas > 1) {
+        prsNodeType* param_list = va_arg(ap, prsNodeType*);
+        for (i = 1; i < npas; i++)
+            p->pa.push_back(param_list->pa[i - 1]);
     }
 
     va_end(ap);

@@ -1,4 +1,7 @@
-int main() {
-    a = (1 + 2) * (2 + 4);
+int Priority(int x,char y,char op, char str[])
+{
+    if (op == 1) {
+        return 0;
+    }
 }
 

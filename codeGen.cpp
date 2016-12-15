@@ -96,6 +96,14 @@ string codeGenStr(strNodeType *p) {
 }
 
 string codeGenId(idNodeType *p) {
+    if (p->type == typeId) {
+        cout << "True True" << endl;
+    } else {
+        cout << "False False" << endl;
+    }
+    cout << "generate identifier !" << endl;
+    cout << "I am here !" << endl;
+    cout << "id is " << p->i << endl;
     return sym[p->i];
 }
 
@@ -168,6 +176,7 @@ string codeGenSta(staNodeType* p, int indent_level) {
             ans = "while (" + codeGenOpr(p->pt[0]) + ") " + codeGenLis(p->pt[1], indent_level + 1);
             break;
         case IF:
+            cout << "if statement" << endl;
             ans = "if (" + codeGenOpr(p->pt[0]) + ") " + codeGenLis(p->pt[1], indent_level + 1);
             break;
         case ELSE:
@@ -230,12 +239,36 @@ string codeGenLis(lisNodeType* p, int indent_level) {
     return ans;
 }
 
+string codeGenPar(parNodeType *p) {
+    // cout << "get param !" << endl;
+    // cout << "parts are" << p->npts << endl;
+    return codeGenId(p->pt[1]);
+}
+
+string codeGenPrs(prsNodeType* p) {
+    string ans = "";
+    for (int i = 0; i < p->npas; i++) {
+        // cout << "get every param" << endl;
+        ans += codeGenPar(p->pa[i]);
+        if (i != p->npas - 1) {
+            ans += ", ";
+        }
+    }
+    return ans;
+}
+
 void codeGenFun(funNodeType* p) {
-    // cout << "enter codeGenFun" << endl;
+    cout << "enter codeGenFun" << endl;
     string ans = "function ";
     ans += codeGenId(p->pt[1]);
-    ans += "()";
-    ans += codeGenLis(p->pt[2], 1);
+    if (p->npts == 3) {
+        ans += "()";
+        ans += codeGenLis(p->pt[2], 1);
+    } else {
+        // cout << "generate the function !" << endl;
+        ans += "(" + codeGenPrs(p->pt[2]) + ")";
+        ans += codeGenLis(p->pt[3], 1);
+    }
     ans.insert(0, getModuleInfo());
     ans += "\nmain();";
     fwrite(ans.c_str(), sizeof(char), ans.length(), generated_code);
