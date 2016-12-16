@@ -31,7 +31,7 @@ void setModuleInfo(string container_name, string module_name);
 string getModuleInfo();
 
 // return the code of a function
-void codeGenFun(funNodeType* p);
+string codeGenFun(funNodeType* p);
 
 // return the code of a block
 string codeGenLis(lisNodeType* p, int indent_level);
@@ -341,7 +341,7 @@ string codeGenPrs(prsNodeType* p) {
     return ans;
 }
 
-void codeGenFun(funNodeType* p) {
+string codeGenFun(funNodeType* p) {
     //cout << "enter codeGenFun" << endl;
     string ans = "function ";
     ans += codeGenId(p->pt[1]);
@@ -353,8 +353,17 @@ void codeGenFun(funNodeType* p) {
         ans += "(" + codeGenPrs(p->pt[2]) + ")";
         ans += codeGenLis(p->pt[3], 1);
     }
+    return ans;
+}
+
+void codeGenPro(proNodeType* p) {
+    string ans = "";
+    for (int i = 0; i < p->nfns; i++) {
+        ans += codeGenFun(p->fn[i]);
+        ans += "\n";
+    }
     ans.insert(0, getModuleInfo());
-    ans += "\nmain();";
+    ans += "main();";
     fwrite(ans.c_str(), sizeof(char), ans.length(), generated_code);
     return;
 }
