@@ -30,19 +30,19 @@ double Calc(char str[])
     char stOp[300];
     int top1;
     int top2;
-
+    
     double x;
     double y;
     double tmp;
     char op;
     int i;
     int n = strlen(str);
-
+    
     top1 = -1;
     top2 = -1;
     stOp[++top2] = '#';
     str[n++] = '#';
-
+    
     for(i=0; i < n; ++i)
     {
         if (str[i]==' ' || str[i] == '\n' || str[i] == '\t') {
@@ -50,12 +50,12 @@ double Calc(char str[])
         }
         if (isdigit(str[i]))                //数字
         {
-            int n = 0;
-            while(isdigit(str[i])) {
-                n = n * 10 + str[i] - '0';
+            tmp = str[i] - '0';
+            while(isdigit(str[i+1])) {
+                tmp = tmp * 10 + str[i] - '0';
                 i++;
             }
-            stDit[++top1] = n;
+            stDit[++top1] = tmp;
             continue;
         }
         if(str[i] == '(') {            // (
@@ -64,10 +64,10 @@ double Calc(char str[])
         }
         if (str[i] == ')') {            // )
             while(stOp[top2] != '(')  {
-               y = stDit[top1--];
-               x = stDit[top1--];
-               op = stOp[top2--];
-               stDit[++top1] = Operate(x,y,op);
+                y = stDit[top1--];
+                x = stDit[top1--];
+                op = stOp[top2--];
+                stDit[++top1] = Operate(x,y,op);
             }
             top2 --;
         }
@@ -75,13 +75,13 @@ double Calc(char str[])
         {
             while (Priority(stOp[top2]) >= Priority(str[i]))//如果操作栈顶的操作符优先级高，则作+-*/运算
             {
-               if (str[i]=='#' && stOp[top2]=='#') {
-                   return stDit[top1];
-               }
-               y = stDit[top1--];
-               x = stDit[top1--];
-               op = stOp[top2--];
-               stDit[++top1] = Operate(x,y,op);
+                if (str[i]=='#' && stOp[top2]=='#') {
+                    return stDit[top1];
+                }
+                y = stDit[top1--];
+                x = stDit[top1--];
+                op = stOp[top2--];
+                stDit[++top1] = Operate(x,y,op);
             }
             stOp[++top2] = str[i];          //如果新操作符优先级高，str[i]进栈
         }
