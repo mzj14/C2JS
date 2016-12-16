@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <string.h>
+
 int main() {
     char str[100];
     printf("Please enter a string less than 100 character, terminated by an enter key:\n");

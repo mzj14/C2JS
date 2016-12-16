@@ -22,7 +22,7 @@ vector<string> module;
 
 FILE *generated_code;
 
-#define UNIT_INDENT 2
+#define UNIT_INDENT 4
 
 // set js module for require module statements
 void setModuleInfo(string container_name, string module_name);
