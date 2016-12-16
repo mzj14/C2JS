@@ -152,11 +152,10 @@ statement_list:
         ;
 
 statement:
-          BREAK ';'                                                              { $$ = sta(BREAK, 0); }
-        | CONTINUE ';'                                                           { $$ = sta(CONTINUE, 0); }
+          BREAK ';'                                                               { $$ = sta(BREAK, 0); }
+        | CONTINUE ';'                                                            { $$ = sta(CONTINUE, 0); }
         | RETURN expr ';'                                                         { $$ = sta(RETURN, 1, $2); }
-        | PRINTF '(' STRING ')' ';'                                               { $$ = sta(PRINTF, 1, conStr($3)); }
-        | PRINTF '(' STRING ',' expr_list ')' ';'                                 { $$ = sta(PRINTF, 2, conStr($3), $5); }
+        | PRINTF '(' expr_list ')' ';'                                            { $$ = sta(PRINTF, 2, $3); }
         | IDENTIFIER '(' expr_list ')' ';'                                        { $$ = sta(IDENTIFIER, 2, id($1), $3); }
         | GETS '(' IDENTIFIER ')' ';'                                             { $$ = sta(GETS, 1, id($3)); }
         | IDENTIFIER '=' expr ';'                                                 { $$ = sta('=', 2, id($1), $3); }

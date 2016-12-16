@@ -97,11 +97,11 @@ string codeGenDbl(dblNodeType *p) {
 }
 
 string codeGenChr(chrNodeType *p) {
-    return "'" + chr[p->i] + "'";
+    return chr[p->i];
 }
 
 string codeGenStr(strNodeType *p) {
-    return "\"" + str[p->i] + "\"";
+    return str[p->i];
 }
 
 string codeGenId(idNodeType *p) {
@@ -281,11 +281,16 @@ string codeGenSta(staNodeType* p, int indent_level) {
             break;
         case PRINTF:
             // //cout << "printf statement" << endl;
+            /*
             string param = codeGenStr(p->pt[0]);
             if (param.substr(param.length() - 3, 2) == "\\n") {
                 param.replace(param.length() - 3, 2, "");
             }
             ans = "console.log(" + param + ");";
+            break;
+            */
+            setModuleInfo("printf", "printf");
+            ans = "process.stdout.write(printf(" + codeGenEps(p->pt[0]) + "));";
             break;
     }
     ans.insert(0, indent_level * UNIT_INDENT, ' ');
@@ -295,7 +300,7 @@ string codeGenSta(staNodeType* p, int indent_level) {
 string codeGenEps(epsNodeType* p) {
     string ans = "";
     for (int i = 0; i < p->neps; i++) {
-        // //cout << "get every param" << endl;
+        cout << "get every param" << endl;
         ans += codeGenOpr(p->ep[i]);
         if (i != p->neps - 1) {
             ans += ", ";
