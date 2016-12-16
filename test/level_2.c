@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <string.h>
+
 int main(){
     char source[100];
     char target[100];
@@ -44,8 +47,12 @@ int main(){
         }
         if (j == target_len)
         {
-            printf("%d ", i - target_len);
-            flag = 1;
+            if (flag == 0) {
+                printf("%d", i - target_len);
+                flag = 1;
+            } else {
+                printf(",%d", i - target_len);
+            }
             j = 0;
         }
         else

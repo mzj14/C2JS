@@ -31,7 +31,7 @@ void setModuleInfo(string container_name, string module_name);
 string getModuleInfo();
 
 // return the code of a function
-void codeGenFun(funNodeType* p);
+string codeGenFun(funNodeType* p);
 
 // return the code of a block
 string codeGenLis(lisNodeType* p, int indent_level);
@@ -73,14 +73,14 @@ void setModuleInfo(string container_name, string module_name) {
 string getModuleInfo() {
     string ans = "";
     for (int i = 0; i < module.size(); i++) {
-        ans += "var " + container[i] + " = " + "require(\"" + module[i] + "\");\n";
+        ans += "let " + container[i] + " = " + "require(\"" + module[i] + "\");\n";
     }
     return ans;
 }
 
 string codeGenTyp(typNodeType *p) {
-    // there is no obvious type in js declaration, so return "var" instead of data type.
-    return "var";
+    // there is no obvious type in js declaration, so return "let" instead of data type.
+    return "let";
 }
 
 string codeGenInt(intNodeType *p) {
@@ -235,7 +235,7 @@ string codeGenSta(staNodeType* p, int indent_level) {
             ans = "while (" + codeGenOpr(p->pt[0]) + ") " + codeGenLis(p->pt[1], indent_level + 1);
             break;
         case FOR:
-            ans = "for (" + codeGenSta(p->pt[0], 0) + ", " + codeGenOpr(p->pt[1]) + ", " + codeGenSta(p->pt[2], 0) + ") " + codeGenLis(p->pt[3], indent_level + 1);
+            ans = "for (" + codeGenSta(p->pt[0], 0) + codeGenOpr(p->pt[1]) + "; " + codeGenOpr(p->pt[2]) + ") " + codeGenLis(p->pt[3], indent_level + 1);
             break;
         case IF:
             //cout << "if statement" << endl;
@@ -258,17 +258,17 @@ string codeGenSta(staNodeType* p, int indent_level) {
         case DECLARE_ARRAY:
             //cout << "declare array statement" << endl;
             if (((typNodeType*)(p->pt[0]))->value == charType) {
-                ans = "var " + codeGenId(p->pt[1]) + " = " + "\'\';";
+                ans = "let " + codeGenId(p->pt[1]) + " = " + "\'\';";
             } else {
-                ans = "var " + codeGenId(p->pt[1]) + " = " + "new Array(" + codeGenInt(p->pt[2]) + ");";
+                ans = "let " + codeGenId(p->pt[1]) + " = " + "new Array(" + codeGenInt(p->pt[2]) + ");";
             }
             break;
         case DECLARE:
             // //cout << "declare statement" << endl;
             if (p->npts == 3) {
-                ans = "var " + codeGenId(p->pt[1]) + " = " + codeGenOpr(p->pt[2]) + ";";
+                ans = "let " + codeGenId(p->pt[1]) + " = " + codeGenOpr(p->pt[2]) + ";";
             } else {
-                ans = "var " + codeGenId(p->pt[1]) + " = undefined;";
+                ans = "let " + codeGenId(p->pt[1]) + " = undefined;";
             }
             break;
         case '=':
@@ -341,20 +341,32 @@ string codeGenPrs(prsNodeType* p) {
     return ans;
 }
 
-void codeGenFun(funNodeType* p) {
+string codeGenFun(funNodeType* p) {
     //cout << "enter codeGenFun" << endl;
-    string ans = "function ";
+    string ans = "";
+    ans += codeGenTyp(p->pt[0]);
+    ans += " ";
     ans += codeGenId(p->pt[1]);
+    ans += " = ";
     if (p->npts == 3) {
-        ans += "()";
+        ans += "() => ";
         ans += codeGenLis(p->pt[2], 1);
     } else {
         // //cout << "generate the function !" << endl;
-        ans += "(" + codeGenPrs(p->pt[2]) + ")";
+        ans += "(" + codeGenPrs(p->pt[2]) + ") => ";
         ans += codeGenLis(p->pt[3], 1);
     }
+    return ans;
+}
+
+void codeGenPro(proNodeType* p) {
+    string ans = "";
+    for (int i = 0; i < p->nfns; i++) {
+        ans += codeGenFun(p->fn[i]);
+        ans += "\n";
+    }
     ans.insert(0, getModuleInfo());
-    ans += "\nmain();";
+    ans += "main();";
     fwrite(ans.c_str(), sizeof(char), ans.length(), generated_code);
     return;
 }

@@ -21,6 +21,9 @@ using namespace std;
 
 /* prototypes */
 
+// construct a program type node, return the pointer
+nodeType *pro(int nfns, ...);
+
 // construct a function type node, return the pointer
 nodeType *fun(int npts, ...);
 
@@ -72,6 +75,9 @@ int getStateNum(nodeType* p);
 // get expression num of a expression list
 int getExpNum(nodeType* p);
 
+// get function num of a program
+int getFuncNum(nodeType* p);
+
 // free the node of AST
 void freeNode(nodeType *p);
 
@@ -118,11 +124,16 @@ int yylex(void);
 %left '*' '/'
 %nonassoc UMINUS
 
-%type <nPtr> function type_name statement statement_list expr expr_list param param_list
+%type <nPtr> function function_list type_name statement statement_list expr expr_list param param_list
 
 %%
 program:
-        function                                        { /* showSym(sym); */ /* ex($1); */ codeGenFun($1); freeNode($1); exit(0); }
+        function_list                                        { /* showSym(sym); */ /* ex($1); */ codeGenPro($1); freeNode($1); exit(0); }
+        ;
+
+function_list:
+          function                                                             { $$ = pro(1, $1); }
+        | function function_list                                               { $$ = pro(1 + getFuncNum($2), $1, $2); }
         ;
 
 function:
@@ -502,6 +513,39 @@ nodeType *fun(int npts, ...) {
     /* add operand pointer(s) */
     for (i = 0; i < npts; i++)
         p->pt.push_back(va_arg(ap, nodeType*));
+
+    va_end(ap);
+    return p;
+}
+
+int getFuncNum(nodeType* prog) {
+    return ((proNodeType*)prog)->nfns;
+}
+
+nodeType *pro(int nfns, ...) {
+    va_list ap;
+    proNodeType *p;
+    int i;
+
+    p = new proNodeType();
+
+    /* copy information */
+    /* set the new node to identifier node */
+    p->type = typePro;
+
+    /* set nsts */
+    p->nfns = nfns;
+
+    /* make ap be the pointer for the argument behind nops */
+    va_start(ap, nfns);
+
+    p->fn.push_back(va_arg(ap, nodeType*));
+
+    if (nfns > 1) {
+        proNodeType* func_list = va_arg(ap, proNodeType*);
+        for (i = 1; i < nfns; i++)
+            p->fn.push_back(func_list->fn[i - 1]);
+    }
 
     va_end(ap);
     return p;
