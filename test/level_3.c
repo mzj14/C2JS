@@ -50,14 +50,17 @@ double Calc(char str[])
         }
         if (isdigit(str[i]))                //数字
         {
-            int n = sscanf(str+i,"%lf",&tmp);
-            stDit[++top1] = tmp;
-            while(isdigit(str[i+1]) || str[i+1] == '.' ) {
-                i ++;
+            int n = 0;
+            while(isdigit(str[i])) {
+                n = n * 10 + str[i] - '0';
+                i++;
             }
+            stDit[++top1] = n;
+            continue;
         }
         if(str[i] == '(') {            // (
             stOp[++top2] = str[i];
+            continue;
         }
         if (str[i] == ')') {            // )
             while(stOp[top2] != '(')  {
@@ -89,9 +92,15 @@ double Calc(char str[])
 int main()
 {
     char str[100];
-    while (fgets(str, 100, stdin) != NULL && strcmp(str,"0")!=0)
+    printf("Please enter an arithmetic expression, less than 100 characters:\n");
+    while (1)
     {
-        printf("%.2lf\n",Calc(str));
+        gets(str);
+        if (!strcmp(str, "")) {
+            continue;
+        } else {
+            printf("%.2lf\n",Calc(str));
+        }
     }
     return 0;
 }

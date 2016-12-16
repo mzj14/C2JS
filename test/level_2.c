@@ -1,9 +1,9 @@
 int main(){
     char source[100];
     char target[100];
-    printf("Please enter a source string less than 100 character, terminated by an enter key:\n");
+    printf("Please enter a source string less than 100 characters:\n");
     gets(source);
-    printf("Please enter a target string less than 100 character, terminated by an enter key:\n");
+    printf("Please enter a target string less than 100 characters:\n");
     gets(target);
     int source_len = strlen(source);
     int target_len = strlen(target);
