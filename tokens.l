@@ -33,7 +33,7 @@ vector<string> chr;
 
 %%
 
-#include([^\n])*                    { ECHO; cout << "ignore the header file in C" << endl; }
+#include([^\n])*                    { ECHO; /* cout << "ignore the header file in C" << endl; */ }
 \/\*(\s|.)*?\*\/                    { ECHO; yylval.sIndex = getStrIndex(yytext); /* cout << "I got the block commet" << endl;*/ return(COMMENT); }
 \/\/([^\n])*                        { ECHO; yylval.sIndex = getStrIndex(yytext); /* cout << "I go the line comment" << endl;*/ return(COMMENT); }
 "break"			                    { ECHO; return(BREAK); }
@@ -56,7 +56,7 @@ vector<string> chr;
 '(\\.|[^\\'])+'	                    { ECHO; yylval.sIndex = getChrIndex(yytext); return(CHARACTER); }
 \"(\\.|[^\\"])*\"	                { ECHO; yylval.sIndex = getStrIndex(yytext); return(STRING); }
 
-{D}*"."{D}+                         { ECHO; yylval.dValue = atof(yytext); /* cout << yylval.dValue << endl; */ return(DOUBLE_NUM); }
+{D}*"."{D}+                         { ECHO; yylval.dValue = atof(yytext); return(DOUBLE_NUM); }
 {D}+"."{D}*                         { ECHO; yylval.dValue = atof(yytext); return(DOUBLE_NUM); }
 
 "&&"			                    { ECHO; return(AND_OP); }

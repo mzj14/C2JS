@@ -14,9 +14,10 @@ using namespace std;
 //TODO: rename lis(lists) to blk(block) to make code more semantic
 
 /* node types */
-typedef enum { typeTyp, typeInt, typeDbl, typeChr, typeStr, typeId, typeOpr, typeEps, typeSta, typeLis, typeFun, typePar, typePrs, typePro } nodeEnum;
+typedef enum { typeTyp, typeInt, typeDbl, typeChr, typeStr, typeId, typeOpr, typeEps,
+                typeSta, typeLis, typeFun, typePar, typePrs, typePro } nodeEnum;
 
-/* variable types */
+/* data types */
 typedef enum { charType, intType, doubleType } typeEnum;
 
 /* super class for all nodes */
@@ -125,7 +126,7 @@ public:
 /* params list */
 class prsNodeType : public nodeType {
 public:
-    int npas;                       /* number of params 2 */
+    int npas;                       /* number of params */
     vector<nodeType*> pa;           /* params, extended at runtime */
 };
 
