@@ -39,3 +39,4 @@ parser.cpp
 parser.hpp
 parser
 *.txt
+*.js
