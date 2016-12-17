@@ -109,7 +109,7 @@ int yylex(void);
 %token <sIndex> STRING COMMENT
 %token <sIndex> IDENTIFIER
 
-%token INC_OP DEC_OP INC_OP_LEFT INC_OP_RIGHT DEC_OP_LEFT DEC_OP_RIGHT LE_OP GE_OP
+%token INC_OP DEC_OP INC_OP_LEFT INC_OP_RIGHT DEC_OP_LEFT DEC_OP_RIGHT LE_OP GE_OP NOT_OP
 %token AND_OP OR_OP
 %token DECLARE DECLARE_ARRAY
 %token WHILE IF PRINTF BREAK RETURN GETS STRLEN CONTINUE FOR ISDIGIT STRCMP
@@ -216,6 +216,7 @@ expr:
         | expr EQ_OP expr                               { $$ = opr(EQ_OP, 2, $1, $3); }
         | expr OR_OP expr                               { $$ = opr(OR_OP, 2, $1, $3); }
         | expr AND_OP expr                              { $$ = opr(AND_OP, 2, $1, $3); }
+        | NOT_OP expr                                   { $$ = opr(NOT_OP, 1, $2); }
         | expr LE_OP expr                               { $$ = opr(LE_OP, 2, $1, $3); }
         | expr GE_OP expr                               { $$ = opr(GE_OP, 2, $1, $3); }
         | '(' expr ')'                                  { $$ = opr('(', 1, $2); }

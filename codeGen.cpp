@@ -105,14 +105,6 @@ string codeGenStr(strNodeType *p) {
 }
 
 string codeGenId(idNodeType *p) {
-    if (p->type == typeId) {
-        //cout << "True True" << endl;
-    } else {
-        //cout << "False False" << endl;
-    }
-    //cout << "generate identifier !" << endl;
-    //cout << "I am here !" << endl;
-    //cout << "id is " << p->i << endl;
     return sym[p->i];
 }
 
@@ -176,6 +168,9 @@ string codeGenOpr(nodeType *p) {
                     break;
                 case OR_OP:
                     ans = codeGenOpr(pt->op[0]) + " || " + codeGenOpr(pt->op[1]);
+                    break;
+                case NOT_OP:
+                    ans = "!" + codeGenOpr(pt->op[0]);
                     break;
                 case '[':
                     ans = codeGenId(pt->op[0]) + "[" + codeGenOpr(pt->op[1]) + "]";

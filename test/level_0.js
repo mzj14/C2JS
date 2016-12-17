@@ -92,7 +92,7 @@ let main = () => {
     process.stdout.write(printf("Please enter an arithmetic expression, less than 100 characters:\n"));
     while (1) {
         str = readlineSync.question('');
-        if ((str != "")) {
+        if (!(str != "")) {
             continue;
         } else {
             process.stdout.write(printf("%.2lf\n", Calc(str)));

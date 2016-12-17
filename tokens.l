@@ -62,6 +62,7 @@ vector<string> chr;
 
 "&&"			                    { ECHO; return(AND_OP); }
 "||"			                    { ECHO; return(OR_OP); }
+"!"                                 { ECHO; return(NOT_OP); }
 "=="			                    { ECHO; return(EQ_OP); }
 "!="			                    { ECHO; return(NE_OP); }
 "++"			                    { ECHO; return(INC_OP); }

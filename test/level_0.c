@@ -105,7 +105,7 @@ int main()
     printf("Please enter an arithmetic expression, less than 100 characters:\n");
     while (1) {
         gets(str);
-        if (strcmp(str, "")) {
+        if (!strcmp(str, "")) {
             continue;
         } else {
             printf("%.2lf\n", Calc(str));
