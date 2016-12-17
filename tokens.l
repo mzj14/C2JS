@@ -33,9 +33,9 @@ vector<string> chr;
 
 %%
 
-#include([^\n])*                    { ECHO; /* cout << "ignore the header file in C" << endl; */ }
-\/\*(\s|.)*?\*\/                    { ECHO; yylval.sIndex = getStrIndex(yytext); /* cout << "I got the block commet" << endl;*/ return(COMMENT); }
-\/\/([^\n])*                        { ECHO; yylval.sIndex = getStrIndex(yytext); /* cout << "I go the line comment" << endl;*/ return(COMMENT); }
+#include([^\n])*                    { ECHO;  }
+\/\*(\s|.)*?\*\/                    { ECHO; yylval.sIndex = getStrIndex(yytext); return(COMMENT); }
+\/\/([^\n])*                        { ECHO; yylval.sIndex = getStrIndex(yytext); return(COMMENT); }
 "break"			                    { ECHO; return(BREAK); }
 "continue"                          { ECHO; return(CONTINUE); }
 "char"			                    { ECHO; yylval.iType = charType; return(CHAR); }
@@ -93,8 +93,6 @@ vector<string> chr;
 
 int getStrIndex(char* text) {
     string textStr(text);
-
-    /* cout << "textStr = " << textStr << endl; */
 
     str.push_back(textStr);
 

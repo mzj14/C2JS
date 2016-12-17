@@ -31,33 +31,33 @@ void setModuleInfo(string container_name, string module_name);
 string getModuleInfo();
 
 // return the code of a function
-string codeGenFun(funNodeType* p);
+string codeGenFun(nodeType* p);
 
 // return the code of a block
-string codeGenLis(lisNodeType* p, int indent_level);
+string codeGenLis(nodeType* p, int indent_level);
 
 // return the code of a statement
 // note that a statement could also be a block
-string codeGenSta(staNodeType* p, int indent_level);
+string codeGenSta(nodeType* p, int indent_level);
 
 // return the code of a expression list
-string codeGenEps(epsNodeType* p);
+string codeGenEps(nodeType* p);
 
 // return the code of a expression
 // note that an expression could also be an id, int, char or string
 string codeGenOpr(nodeType *p);
 
 // return the code of a identifier
-string codeGenId(idNodeType *p);
+string codeGenId(nodeType *p);
 
 // return the code of a string
-string codeGenStr(strNodeType *p);
+string codeGenStr(nodeType *p);
 
 // return the code of a integer
-string codeGenInt(intNodeType *p);
+string codeGenInt(nodeType *p);
 
 // return the code of a char
-string codeGenChar(chrNodeType *p);
+string codeGenChar(nodeType *p);
 
 void setModuleInfo(string container_name, string module_name) {
     // //cout << "set module info" << endl;
@@ -78,33 +78,54 @@ string getModuleInfo() {
     return ans;
 }
 
-string codeGenTyp(typNodeType *p) {
+string codeGenTyp(nodeType *p) {
     // there is no obvious type in js declaration, so return "let" instead of data type.
+    if (p->type != typeTyp) {
+        cerr << "not typNodeType !" << endl;
+    }
     return "let";
 }
 
-string codeGenInt(intNodeType *p) {
+string codeGenInt(nodeType *p_temp) {
+    if (p_temp->type != typeInt) {
+        cerr << "not intNodeType !" << endl;
+    }
+    intNodeType* p = (intNodeType*)p_temp;
     string ans = to_string(p->value);
     return ans;
 }
 
-string codeGenDbl(dblNodeType *p) {
+string codeGenDbl(nodeType *p_temp) {
+    if (p_temp->type != typeDbl) {
+        cerr << "not dblNodeType !" << endl;
+    }
+    dblNodeType* p = (dblNodeType*)p_temp;
     stringstream ss;
     ss << p->value;
-    //cout << ss.str() << endl;
-    //cout << p->value << endl;
     return ss.str();
 }
 
-string codeGenChr(chrNodeType *p) {
+string codeGenChr(nodeType *p_temp) {
+    if (p_temp->type != typeChr) {
+        cerr << "not chrNodeType !" << endl;
+    }
+    chrNodeType* p = (chrNodeType*)p_temp;
     return chr[p->i];
 }
 
-string codeGenStr(strNodeType *p) {
+string codeGenStr(nodeType *p_temp) {
+    if (p_temp->type != typeStr) {
+        cerr << "not strNodeType !" << endl;
+    }
+    strNodeType* p = (strNodeType*)p_temp;
     return str[p->i];
 }
 
-string codeGenId(idNodeType *p) {
+string codeGenId(nodeType *p_temp) {
+    if (p_temp->type != typeId) {
+        cerr << "not idNodeType !" << endl;
+    }
+    idNodeType* p = (idNodeType*)p_temp;
     return sym[p->i];
 }
 
@@ -199,9 +220,11 @@ string codeGenOpr(nodeType *p) {
     return ans;
 }
 
-string codeGenSta(staNodeType* p, int indent_level) {
-    // //cout << "in the statement function" << endl;
-    // //cout << "p->mark = " << p->mark << endl;
+string codeGenSta(nodeType* p_temp, int indent_level) {
+    if (p_temp->type != typeSta) {
+        cerr << "not staNodeType !" << endl;
+    }
+    staNodeType* p = (staNodeType*)p_temp;
     string ans = "";
     switch (p->mark) {
         case COMMENT:
@@ -286,7 +309,11 @@ string codeGenSta(staNodeType* p, int indent_level) {
     return ans;
 }
 
-string codeGenEps(epsNodeType* p) {
+string codeGenEps(nodeType* p_temp) {
+    if (p_temp->type != typeEps) {
+        cerr << "not epsTypeNode !" << endl;
+    }
+    epsNodeType* p = (epsNodeType*)p_temp;
     string ans = "";
     for (int i = 0; i < p->neps; i++) {
         cout << "get every param" << endl;
@@ -298,30 +325,36 @@ string codeGenEps(epsNodeType* p) {
     return ans;
 }
 
-string codeGenLis(lisNodeType* p, int indent_level) {
+string codeGenLis(nodeType* p_temp, int indent_level) {
+    if (p_temp->type != typeLis) {
+        cerr << "not lisTypeNode !" << endl;
+    }
+    lisNodeType* p = (lisNodeType*)p_temp;
     string ans = "";
     ans += "{\n";
-    // //cout << "totally " << p->nsts << " statements." << endl;
     for (int i = 0; i < p->nsts; i++) {
-        //cout << "get every statement" << endl;
         ans += codeGenSta(p->st[i], indent_level) + "\n";
     }
-    // ans.insert(0, (indent_level - 1) * UNIT_INDENT, ' ');
     ans.insert(ans.length(), (indent_level - 1) * UNIT_INDENT, ' ');
     ans += "}";
     return ans;
 }
 
-string codeGenPar(parNodeType *p) {
-    // //cout << "get param !" << endl;
-    // //cout << "parts are" << p->npts << endl;
+string codeGenPar(nodeType *p_temp) {
+    if (p_temp->type != typePar) {
+        cerr << "not parTypeNode !" << endl;
+    }
+    parNodeType* p = (parNodeType*)p_temp;
     return codeGenId(p->pt[1]);
 }
 
-string codeGenPrs(prsNodeType* p) {
+string codeGenPrs(nodeType* p_temp) {
+    if (p_temp->type != typePrs) {
+        cerr << "not prsTypeNode !" << endl;
+    }
+    prsNodeType* p = (prsNodeType*)p_temp;
     string ans = "";
     for (int i = 0; i < p->npas; i++) {
-        // //cout << "get every param" << endl;
         ans += codeGenPar(p->pa[i]);
         if (i != p->npas - 1) {
             ans += ", ";
@@ -330,8 +363,11 @@ string codeGenPrs(prsNodeType* p) {
     return ans;
 }
 
-string codeGenFun(funNodeType* p) {
-    //cout << "enter codeGenFun" << endl;
+string codeGenFun(nodeType* p_temp) {
+    if (p_temp->type != typeFun) {
+        cerr << "not funTypeNode !" << endl;
+    }
+    funNodeType* p = (funNodeType*)p_temp;
     string ans = "";
     ans += codeGenTyp(p->pt[0]);
     ans += " ";
@@ -348,7 +384,11 @@ string codeGenFun(funNodeType* p) {
     return ans;
 }
 
-void codeGenPro(proNodeType* p) {
+void codeGenPro(nodeType* p_temp) {
+    if (p_temp->type != typePro) {
+        cerr << "not proTypeNode !" << endl;
+    }
+    proNodeType* p = (proNodeType*)p_temp;
     string ans = "";
     for (int i = 0; i < p->nfns; i++) {
         ans += codeGenFun(p->fn[i]);

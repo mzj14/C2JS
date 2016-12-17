@@ -559,24 +559,32 @@ void freeNode(nodeType *p) {
     if (!p) return;
     switch (p->type) {
         case typeOpr:
-            oprNodeType* p_opr = (oprNodeType*)p;
-            for (i = 0; i < p_opr->nops; i++)
-                freeNode(p_opr->op[i]);
+            {
+                oprNodeType* p_opr = (oprNodeType*)p;
+                for (i = 0; i < p_opr->nops; i++)
+                    freeNode(p_opr->op[i]);
+            }
             break;
         case typeSta:
-            staNodeType* p_sta = (staNodeType*)p;
-            for (i = 0; i < p_sta->npts; i++)
-               freeNode(p_sta->pt[i]);
+            {
+                staNodeType* p_sta = (staNodeType*)p;
+                for (i = 0; i < p_sta->npts; i++)
+                   freeNode(p_sta->pt[i]);
+            }
             break;
         case typeLis:
-            lisNodeType* p_lis = (lisNodeType*)p;
-            for (i = 0; i < p_lis->nsts; i++)
-               freeNode(p_lis->st[i]);
+            {
+                lisNodeType* p_lis = (lisNodeType*)p;
+                for (i = 0; i < p_lis->nsts; i++)
+                   freeNode(p_lis->st[i]);
+            }
             break;
         case typeFun:
-            funNodeType* p_fun = (funNodeType*)p;
-            for (i = 0; i < p_fun->npts; i++)
-               freeNode(p_fun->pt[i]);
+            {
+                funNodeType* p_fun = (funNodeType*)p;
+                for (i = 0; i < p_fun->npts; i++)
+                   freeNode(p_fun->pt[i]);
+            }
             break;
     }
 

@@ -6,4 +6,4 @@
 #include "node.hpp"
 #include "parser.hpp"
 
-extern void codeGenPro(proNodeType* p);
+extern void codeGenPro(nodeType* p);
