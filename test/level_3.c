@@ -93,14 +93,13 @@ int main()
 {
     char str[100];
     printf("Please enter an arithmetic expression, less than 100 characters:\n");
-    while (1)
-    {
+    while (1) {
         gets(str);
         if (!strcmp(str, "")) {
             continue;
         } else {
-            printf("%.2lf\n",Calc(str));
+            printf("%.2lf\n", Calc(str));
+            return 0;
         }
     }
-    return 0;
 }
