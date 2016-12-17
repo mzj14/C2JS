@@ -58,15 +58,13 @@ double Calc(char str[])
         if (str[i]==' ' || str[i] == '\n' || str[i] == '\t') {
             continue;
         }
-        if (isdigit(str[i]))
-        {
-            //数字
-            int n = 0;
-            while(isdigit(str[i])) {
-                n = n * 10 + str[i] - '0';
+        if (isdigit(str[i]))  {              //数字
+            tmp = str[i] - '0';
+            while(isdigit(str[i+1])) {
+                tmp = tmp * 10 + str[i] - '0';
                 i++;
             }
-            stDit[++top1] = n;
+            stDit[++top1] = tmp;
             continue;
         }
         if(str[i] == '(') {            // (
@@ -95,8 +93,7 @@ double Calc(char str[])
                 op = stOp[top2--];
                 stDit[++top1] = Operate(x,y,op);
             }
-            //如果新操作符优先级高，str[i]进栈
-            stOp[++top2] = str[i];
+            stOp[++top2] = str[i];          //如果新操作符优先级高，str[i]进栈
         }
     }
     return stDit[top1];
@@ -106,7 +103,16 @@ int main()
 {
     char str[100];
     printf("Please enter an arithmetic expression, less than 100 characters:\n");
-    return 0;
+    while (1) {
+        gets(str);
+        if (strcmp(str, "")) {
+            continue;
+        } else {
+            printf("%.2lf\n", Calc(str));
+            return 0;
+        }
+    }
 }
+
 
 

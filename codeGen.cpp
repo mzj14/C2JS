@@ -186,6 +186,9 @@ string codeGenOpr(nodeType *p) {
                 case STRLEN:
                     ans = codeGenId(pt->op[0]) + ".length";
                     break;
+                case STRCMP:
+                    ans = "(" + codeGenOpr(pt->op[0]) + " != " + codeGenOpr(pt->op[1]) + ")";
+                    break;
                 case ISDIGIT:
                     ans = "!isNaN(parseInt(" + codeGenOpr(pt->op[0]) + "))";
                     break;
@@ -280,15 +283,6 @@ string codeGenSta(staNodeType* p, int indent_level) {
             cout << "assignment" << endl;
             break;
         case PRINTF:
-            // //cout << "printf statement" << endl;
-            /*
-            string param = codeGenStr(p->pt[0]);
-            if (param.substr(param.length() - 3, 2) == "\\n") {
-                param.replace(param.length() - 3, 2, "");
-            }
-            ans = "console.log(" + param + ");";
-            break;
-            */
             setModuleInfo("printf", "printf");
             ans = "process.stdout.write(printf(" + codeGenEps(p->pt[0]) + "));";
             break;

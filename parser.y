@@ -112,7 +112,7 @@ int yylex(void);
 %token INC_OP DEC_OP INC_OP_LEFT INC_OP_RIGHT DEC_OP_LEFT DEC_OP_RIGHT LE_OP GE_OP
 %token AND_OP OR_OP
 %token DECLARE DECLARE_ARRAY
-%token WHILE IF PRINTF BREAK RETURN GETS STRLEN CONTINUE FOR ISDIGIT
+%token WHILE IF PRINTF BREAK RETURN GETS STRLEN CONTINUE FOR ISDIGIT STRCMP
 
 /* no associativity */
 %nonassoc IFX
@@ -198,6 +198,7 @@ expr:
         | IDENTIFIER                                    { $$ = id($1); }
         | '-' expr %prec UMINUS                         { $$ = opr(UMINUS, 1, $2); }
         | STRLEN '(' IDENTIFIER ')'                     { $$ = opr(STRLEN, 1, id($3)); }
+        | STRCMP '(' expr ',' expr ')'                  { $$ = opr(STRCMP, 2, $3, $5); }
         | ISDIGIT '(' expr ')'                          { $$ = opr(ISDIGIT, 1, $3); }
         | IDENTIFIER '(' expr_list ')'                  { $$ = opr(IDENTIFIER, 2, id($1), $3); }
         | IDENTIFIER '[' expr ']'                       { $$ = opr('[', 2, id($1), $3); }

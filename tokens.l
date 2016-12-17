@@ -48,6 +48,7 @@ vector<string> chr;
 "printf"                            { ECHO; return(PRINTF); }
 "gets"                              { ECHO; return(GETS); }
 "strlen"                            { ECHO; return(STRLEN); }
+"strcmp"                            { ECHO; return(STRCMP); }
 "isdigit"                           { ECHO; return(ISDIGIT); }
 "for"                               { ECHO; return(FOR); }
 
