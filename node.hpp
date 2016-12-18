@@ -7,12 +7,6 @@
 
 using namespace std;
 
-//TODO: remove unnecessary header file
-//TODO: add constructor function for node classes
-//TODO: rename the opr(operation) to exp(expression) to make code more semantic
-//TODO: remove i to index to make code more semantic
-//TODO: rename lis(lists) to blk(block) to make code more semantic
-
 /* node types */
 typedef enum { typeTyp, typeInt, typeDbl, typeChr, typeStr, typeId, typeOpr, typeEps,
                 typeSta, typeLis, typeFun, typePar, typePrs, typePro } nodeEnum;
