@@ -9,15 +9,11 @@ Compiling C into JavaScript
 ### Syntax analyzer
 `parser.y`
 
-### Abstract syntax tree and its visualizer
-`graph.cpp`
-
 ### Code generator
 `codeGen.cpp`
 
 ### Testcases
 `level_*.c`, accompanied by `level_*.js` as reference.
-
 
 ## Usage
 
