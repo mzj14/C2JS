@@ -10,7 +10,7 @@
 
 using namespace std;
 
-int del = 5; /* distance of graph columns */
+int del = 10; /* distance of graph columns */
 int eps = 3; /* distance of graph lines */
 
 FILE* out_graph; /* out put file for graph */
@@ -415,7 +415,7 @@ void graphDrawBox (char *s, int c, int l) {
     int i;
     graphTest (l, c+strlen(s)-1+del);
     for (i = 0; i < strlen (s); i++) {
-        graph[l][c+i+del] = s[i];
+        graph[l][c+i+del/2] = s[i];
     }
 }
 
