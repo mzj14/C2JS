@@ -32,61 +32,61 @@ vector<string> chr;
 
 %%
 
-#include([^\n])*                    { ECHO;  }
-\/\*(\s|.)*?\*\/                    { ECHO; yylval.sIndex = getStrIndex(yytext); return(COMMENT); }
-\/\/([^\n])*                        { ECHO; yylval.sIndex = getStrIndex(yytext); return(COMMENT); }
-"break"			                    { ECHO; return(BREAK); }
-"continue"                          { ECHO; return(CONTINUE); }
-"char"			                    { ECHO; yylval.iType = charType; return(CHAR); }
-"else"			                    { ECHO; return(ELSE); }
-"if"			                    { ECHO; return(IF); }
-"int"			                    { ECHO; yylval.iType = intType; return(INT); }
-"double"                            { ECHO; yylval.iType = doubleType; return(DOUBLE); }
-"return"		                    { ECHO; return(RETURN); }
-"while"			                    { ECHO; return(WHILE); }
-"printf"                            { ECHO; return(PRINTF); }
-"gets"                              { ECHO; return(GETS); }
-"strlen"                            { ECHO; return(STRLEN); }
-"strcmp"                            { ECHO; return(STRCMP); }
-"isdigit"                           { ECHO; return(ISDIGIT); }
-"for"                               { ECHO; return(FOR); }
+#include([^\n])*                    { /*ECHO;*/  }
+\/\*(\s|.)*?\*\/                    { /*ECHO;*/ yylval.sIndex = getStrIndex(yytext); return(COMMENT); }
+\/\/([^\n])*                        { /*ECHO;*/ yylval.sIndex = getStrIndex(yytext); return(COMMENT); }
+"break"			                    { /*ECHO;*/ return(BREAK); }
+"continue"                          { /*ECHO;*/ return(CONTINUE); }
+"char"			                    { /*ECHO;*/ yylval.iType = charType; return(CHAR); }
+"else"			                    { /*ECHO;*/ return(ELSE); }
+"if"			                    { /*ECHO;*/ return(IF); }
+"int"			                    { /*ECHO;*/ yylval.iType = intType; return(INT); }
+"double"                            { /*ECHO;*/ yylval.iType = doubleType; return(DOUBLE); }
+"return"		                    { /*ECHO;*/ return(RETURN); }
+"while"			                    { /*ECHO;*/ return(WHILE); }
+"printf"                            { /*ECHO;*/ return(PRINTF); }
+"gets"                              { /*ECHO;*/ return(GETS); }
+"strlen"                            { /*ECHO;*/ return(STRLEN); }
+"strcmp"                            { /*ECHO;*/ return(STRCMP); }
+"isdigit"                           { /*ECHO;*/ return(ISDIGIT); }
+"for"                               { /*ECHO;*/ return(FOR); }
 
-{L}({L}|{D})*		                { ECHO; yylval.sIndex = getIDIndex(yytext); return(IDENTIFIER); }
-{D}+		                        { ECHO; yylval.iValue = atoi(yytext); return(INTEGER); }
-'(\\.|[^\\'])+'	                    { ECHO; yylval.sIndex = getChrIndex(yytext); return(CHARACTER); }
-\"(\\.|[^\\"])*\"	                { ECHO; yylval.sIndex = getStrIndex(yytext); return(STRING); }
+{L}({L}|{D})*		                { /*ECHO;*/ yylval.sIndex = getIDIndex(yytext); return(IDENTIFIER); }
+{D}+		                        { /*ECHO;*/ yylval.iValue = atoi(yytext); return(INTEGER); }
+'(\\.|[^\\'])+'	                    { /*ECHO;*/ yylval.sIndex = getChrIndex(yytext); return(CHARACTER); }
+\"(\\.|[^\\"])*\"	                { /*ECHO;*/ yylval.sIndex = getStrIndex(yytext); return(STRING); }
 
-{D}*"."{D}+                         { ECHO; yylval.dValue = atof(yytext); return(DOUBLE_NUM); }
-{D}+"."{D}*                         { ECHO; yylval.dValue = atof(yytext); return(DOUBLE_NUM); }
+{D}*"."{D}+                         { /*ECHO;*/ yylval.dValue = atof(yytext); return(DOUBLE_NUM); }
+{D}+"."{D}*                         { /*ECHO;*/ yylval.dValue = atof(yytext); return(DOUBLE_NUM); }
 
-"&&"			                    { ECHO; return(AND_OP); }
-"||"			                    { ECHO; return(OR_OP); }
-"=="			                    { ECHO; return(EQ_OP); }
-"!="			                    { ECHO; return(NE_OP); }
-"++"			                    { ECHO; return(INC_OP); }
-"--"			                    { ECHO; return(DEC_OP); }
-">="                                { ECHO; return(GE_OP); }
-"<="			                    { ECHO; return(LE_OP); }
-";"			                        { ECHO; return(';'); }
-"{"		                            { ECHO; return('{'); }
-"}"		                            { ECHO; return('}'); }
-"="			                        { ECHO; return('='); }
-"("			                        { ECHO; return('('); }
-")"			                        { ECHO; return(')'); }
-"["		                            { ECHO; return('['); }
-"]"		                            { ECHO; return(']'); }
-"-"			                        { ECHO; return('-'); }
-"+"			                        { ECHO; return('+'); }
-"*"                                 { ECHO; return('*'); }
-"/"                                 { ECHO; return('/'); }
-"<"			                        { ECHO; return('<'); }
-">"			                        { ECHO; return('>'); }
-","                                 { ECHO; return(','); }
-"!"                                 { ECHO; return('!'); }
+"&&"			                    { /*ECHO;*/ return(AND_OP); }
+"||"			                    { /*ECHO;*/ return(OR_OP); }
+"=="			                    { /*ECHO;*/ return(EQ_OP); }
+"!="			                    { /*ECHO;*/ return(NE_OP); }
+"++"			                    { /*ECHO;*/ return(INC_OP); }
+"--"			                    { /*ECHO;*/ return(DEC_OP); }
+">="                                { /*ECHO;*/ return(GE_OP); }
+"<="			                    { /*ECHO;*/ return(LE_OP); }
+";"			                        { /*ECHO;*/ return(';'); }
+"{"		                            { /*ECHO;*/ return('{'); }
+"}"		                            { /*ECHO;*/ return('}'); }
+"="			                        { /*ECHO;*/ return('='); }
+"("			                        { /*ECHO;*/ return('('); }
+")"			                        { /*ECHO;*/ return(')'); }
+"["		                            { /*ECHO;*/ return('['); }
+"]"		                            { /*ECHO;*/ return(']'); }
+"-"			                        { /*ECHO;*/ return('-'); }
+"+"			                        { /*ECHO;*/ return('+'); }
+"*"                                 { /*ECHO;*/ return('*'); }
+"/"                                 { /*ECHO;*/ return('/'); }
+"<"			                        { /*ECHO;*/ return('<'); }
+">"			                        { /*ECHO;*/ return('>'); }
+","                                 { /*ECHO;*/ return(','); }
+"!"                                 { /*ECHO;*/ return('!'); }
 
-[ \t\n\r\v\f]		                { ECHO; }
+[ \t\n\r\v\f]		                { /*ECHO;*/ }
 
-.			                        { ECHO; cout << "Unknown character" << endl; }
+.			                        { /*ECHO;*/ cout << "Unknown character" << endl; }
 
 %%
 
