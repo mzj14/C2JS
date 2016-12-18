@@ -13,38 +13,44 @@
 
 using namespace std;
 
-// TODO: Does string copy waste a lot of time?
-// TODO: Something maybe wrong with char
-// TODO: Do we need reference type for params and return value?
 // vectors for node js require module statements
 vector<string> container;
 vector<string> module;
 
 FILE *generated_code;
 
+// set js code indentation to 4 spaces
 #define UNIT_INDENT 4
 
-// set js module for require module statements
+/**************************************************************** require module **********************************************/
+// set js module for 'require' module statements
 void setModuleInfo(string container_name, string module_name);
 
 // get require module statements based on module info
 string getModuleInfo();
+/******************************************************************************************************************************/
 
+
+/********************************************** code generation function on different level *********************************/
 // return the code of a function
 string codeGenFun(nodeType* p);
+
+// return the code of a param list
+string codeGenPrs(nodeType* p);
+
+// return the code of a param
+string codeGenPar(nodeType* p);
 
 // return the code of a block
 string codeGenLis(nodeType* p, int indent_level);
 
 // return the code of a statement
-// note that a statement could also be a block
 string codeGenSta(nodeType* p, int indent_level);
 
 // return the code of a expression list
 string codeGenEps(nodeType* p);
 
 // return the code of a expression
-// note that an expression could also be an id, int, char or string
 string codeGenOpr(nodeType *p);
 
 // return the code of a identifier
@@ -56,8 +62,15 @@ string codeGenStr(nodeType *p);
 // return the code of a integer
 string codeGenInt(nodeType *p);
 
+// return the code of a double
+string codeGenDbl(nodeType *p);
+
 // return the code of a char
-string codeGenChar(nodeType *p);
+string codeGenChr(nodeType *p);
+
+// return the code of a type
+string codeGenTyp(nodeType *p);
+/*********************************************************************************************************************/
 
 void setModuleInfo(string container_name, string module_name) {
     // //cout << "set module info" << endl;
