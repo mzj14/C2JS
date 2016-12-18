@@ -1,5 +1,3 @@
-/* source code courtesy of Frank Thomas Braun */
-
 /* Generation of the graph of the syntax tree */
 
 #include <stdio.h>
@@ -88,18 +86,45 @@ void exNode
             break;
         case typeInt:  sprintf (word, "integer(%d)", ((intNodeType*)p)->value); break;
         case typeDbl:  sprintf (word, "double(%f)", ((dblNodeType*)p)->value); break;
-        case typeChr:  sprintf (word, "character(%s)", chr[((chrNodeType*)p)->i]); break;
+        case typeChr:  sprintf (word, "character(%s)", chr[((chrNodeType*)p)->i].c_str()); break;
         case typeStr:  sprintf (word, "string(%s)", str[((strNodeType*)p)->i].c_str()); break;
         case typeId :  sprintf (word, "id(%s)", sym[((idNodeType*)p)->i].c_str()); break;
-        case typeLis:  sprintf (word, "lis * %d", ((lisNodeType*)p)->nsts); break;
+        case typeEps:  sprintf (word, "expression list"); break;
+        case typePar:  sprintf (word, "param"); break;
+        case typePrs:  sprintf (word, "param list"); break;
+        case typePro:  sprintf (word, "program"); break;
+        case typeLis:  sprintf (word, "block"); break;
         case typeFun:  sprintf (word, "function"); break;
         case typeSta:
             switch(((staNodeType*)p)->mark) {
+                case COMMENT:
+                    sprintf(s, "comment");
+                    break;
+                case INC_OP_LEFT:
+                case INC_OP_RIGHT:
+                    sprintf(s, "++");
+                    break;
+                case DEC_OP_LEFT:
+                case DEC_OP_RIGHT:
+                    sprintf(s, "--");
+                    break;
+                case IDENTIFIER:
+                    sprintf(s, "id");
+                    break;
+                case CONTINUE:
+                    sprintf(s, "continue");
+                    break;
                 case WHILE:
                     sprintf(s, "while");
                     break;
+                case FOR:
+                    sprintf(s, "for");
+                    break;
                 case IF:
                     sprintf(s, "if");
+                    break;
+                case ELSE:
+                    sprintf(s, "if/else");
                     break;
                 case PRINTF:
                     sprintf(s, "printf");
@@ -127,22 +152,34 @@ void exNode
 
         case typeOpr:
             switch(((oprNodeType*)p)->oper){
-                // case MAIN:      sprintf(s, "main");    break;
-                case STRLEN:    sprintf(s, "strlen");  break;
-                case '=':       sprintf(s, "[=]");     break;
-                case '+':       sprintf(s, "[+]");      break;
-                case '-':       sprintf(s, "[-]");     break;
-                case '*':       sprintf(s, "[*]");     break;
-                case '/':       sprintf(s, "[/]");      break;
-                case '<':       sprintf(s, "[<]");     break;
-                case '>':       sprintf(s, "[>]");     break;
-                case '[':       sprintf(s, "[[]");      break;
-                case ',':       sprintf(s, "[,]");      break;
-                case NE_OP:     sprintf(s, "[!=]");     break;
-                case EQ_OP:     sprintf(s, "[==]");    break;
-                case AND_OP:    sprintf(s, "[&&]");    break;
-                case OR_OP:     sprintf(s, "[||]");    break;
-                case UMINUS:    sprintf(s, "[minus]"); break;
+                case STRLEN:                      sprintf(s, "strlen");  break;
+                case STRCMP:                      sprintf(s, "strcmp");  break;
+                case ISDIGIT:                     sprintf(s, "isdigit"); break;
+
+                case '+':                         sprintf(s, "[+]");     break;
+                case '-':                         sprintf(s, "[-]");     break;
+                case '*':                         sprintf(s, "[*]");     break;
+                case '/':                         sprintf(s, "[/]");     break;
+                case '<':                         sprintf(s, "[<]");     break;
+                case '>':                         sprintf(s, "[>]");     break;
+                case '[':                         sprintf(s, "[[]");     break;
+                case '(':                         sprintf(s, "[(]");     break;
+                case '!':                         sprintf(s, "[!]");     break;
+                case UMINUS:                      sprintf(s, "[minus]"); break;
+
+                case LE_OP:                       sprintf(s, "[<=]");    break;
+                case GE_OP:                       sprintf(s, "[>=]");    break;
+                case NE_OP:                       sprintf(s, "[!=]");    break;
+                case EQ_OP:                       sprintf(s, "[==]");    break;
+                case AND_OP:                      sprintf(s, "[&&]");    break;
+                case OR_OP:                       sprintf(s, "[||]");    break;
+
+                case INC_OP_LEFT:                 sprintf(s, "[++]");    break;
+                case DEC_OP_LEFT:                 sprintf(s, "[--]");    break;
+                case INC_OP_RIGHT:                sprintf(s, "[++]");    break;
+                case DEC_OP_RIGHT:                sprintf(s, "[--]");    break;
+
+                case IDENTIFIER:                  sprintf(s, "id");      break;
             }
             break;
     }
@@ -154,12 +191,8 @@ void exNode
     *cm = c + w / 2;
 
     /* node is leaf */
-    if (p->type == typeTyp || p->type == typeInt || p->type == typeChr || p->type == typeStr || p->type == typeId) {
-        graphDrawBox (s, cbar, l);
-        return;
-    }
-
-    if (p->type == typeOpr && ((oprNodeType*)p)->nops == 0) {
+    if (p->type == typeTyp || p->type == typeInt || p->type == typeChr ||
+        p->type == typeStr || p->type == typeId || p->type == typeDbl) {
         graphDrawBox (s, cbar, l);
         return;
     }
@@ -170,6 +203,14 @@ void exNode
         oprNodeType* pt = (oprNodeType*)p;
         for (k = 0; k < pt->nops; k++) {
             exNode (pt->op[k], cs, l+h+eps, &che, &chm);
+            cs = che;
+        }
+    }
+
+    if (p->type == typeEps) {
+        epsNodeType* pt = (epsNodeType*)p;
+        for (k = 0; k < pt->neps; k++) {
+            exNode (pt->ep[k], cs, l+h+eps, &che, &chm);
             cs = che;
         }
     }
@@ -194,6 +235,30 @@ void exNode
         funNodeType* pt = (funNodeType*)p;
         for (k = 0; k < pt->npts; k++) {
             exNode (pt->pt[k], cs, l+h+eps, &che, &chm);
+            cs = che;
+        }
+    }
+
+    if (p->type == typePar) {
+        parNodeType* pt = (parNodeType*)p;
+        for (k = 0; k < pt->npts; k++) {
+            exNode (pt->pt[k], cs, l+h+eps, &che, &chm);
+            cs = che;
+        }
+    }
+
+    if (p->type == typePrs) {
+        prsNodeType* pt = (prsNodeType*)p;
+        for (k = 0; k < pt->npas; k++) {
+            exNode (pt->pa[k], cs, l+h+eps, &che, &chm);
+            cs = che;
+        }
+    }
+
+    if (p->type == typePro) {
+        proNodeType* pt = (proNodeType*)p;
+        for (k = 0; k < pt->nfns; k++) {
+            exNode (pt->fn[k], cs, l+h+eps, &che, &chm);
             cs = che;
         }
     }
@@ -219,6 +284,15 @@ void exNode
         }
     }
 
+    if (p->type == typeEps) {
+        cs = c;
+        epsNodeType* pt = (epsNodeType*)p;
+        for (k = 0; k < pt->neps; k++) {
+            exNode (pt->ep[k], cs, l+h+eps, &che, &chm);
+            graphDrawArrow (*cm, l+h, chm, l+h+eps-1);
+            cs = che;
+        }
+    }
 
     if (p->type == typeSta) {
         cs = c;
@@ -245,6 +319,36 @@ void exNode
         funNodeType* pt = (funNodeType*)p;
         for (k = 0; k < pt->npts; k++) {
             exNode (pt->pt[k], cs, l+h+eps, &che, &chm);
+            graphDrawArrow (*cm, l+h, chm, l+h+eps-1);
+            cs = che;
+        }
+    }
+
+    if (p->type == typePar) {
+        cs = c;
+        parNodeType* pt = (parNodeType*)p;
+        for (k = 0; k < pt->npts; k++) {
+            exNode (pt->pt[k], cs, l+h+eps, &che, &chm);
+            graphDrawArrow (*cm, l+h, chm, l+h+eps-1);
+            cs = che;
+        }
+    }
+
+    if (p->type == typePrs) {
+        cs = c;
+        prsNodeType* pt = (prsNodeType*)p;
+        for (k = 0; k < pt->npas; k++) {
+            exNode (pt->pa[k], cs, l+h+eps, &che, &chm);
+            graphDrawArrow (*cm, l+h, chm, l+h+eps-1);
+            cs = che;
+        }
+    }
+
+    if (p->type == typePro) {
+        cs = c;
+        proNodeType* pt = (proNodeType*)p;
+        for (k = 0; k < pt->nfns; k++) {
+            exNode (pt->fn[k], cs, l+h+eps, &che, &chm);
             graphDrawArrow (*cm, l+h, chm, l+h+eps-1);
             cs = che;
         }
@@ -294,13 +398,10 @@ void graphFinish() {
     for (i = lmax-1; i > 0 && graph[i][0] == 0; i--);
     sprintf(out_stream, "\n\nGraph %d:\n", graphNumber++);
     fwrite(out_stream, sizeof(char), strlen(out_stream), out_graph);
-    // printf ("\n\nGraph %d:\n", graphNumber++);
     for (j = 0; j <= i; j++) {
       sprintf(out_stream, "\n%s", graph[j]);
       fwrite(out_stream, sizeof(char), strlen(out_stream), out_graph);
-      // printf ("\n%s", graph[j]);
     }
-    // printf("\n");
     sprintf(out_stream, "\n");
     fwrite(out_stream, sizeof(char), strlen(out_stream), out_graph);
 }

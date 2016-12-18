@@ -105,8 +105,9 @@ string codeGenInt(nodeType *p_temp) {
         cerr << "not intNodeType !" << endl;
     }
     intNodeType* p = (intNodeType*)p_temp;
-    string ans = to_string(p->value);
-    return ans;
+    stringstream ss;
+    ss << p->value;
+    return ss.str();
 }
 
 string codeGenDbl(nodeType *p_temp) {
