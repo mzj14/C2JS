@@ -1,15 +1,10 @@
 OBJS = tokens.o parser.o graph.o codeGen.o
-
-LLVMCONFIG = llvm-config
-CPPFLAGS = `$(LLVMCONFIG) --cppflags` -std=c++11 -fpermissive
-LDFLAGS = `$(LLVMCONFIG) --ldflags` -lpthread -ldl -lz -rdynamic
-LIBS = `$(LLVMCONFIG) --libs`
 CC = g++
 
 all: parser
 
 parser: $(OBJS) 
-	$(CC) -o $@ $(OBJS) $(LIBS) $(LDFLAGS)
+	$(CC) -o $@ $(OBJS)
 
 tokens.cpp: tokens.l parser.hpp
 	lex -o $@ $^
@@ -20,7 +15,7 @@ parser.cpp: parser.y
 parser.hpp: parser.cpp
 
 %.o: %.cpp
-	$(CC) -c $(CPPFLAGS) -o $@ $<
+	$(CC) -c -o $@ $<
 
 test: parser
 	./parser test/level_0.c test/graph_0.txt
