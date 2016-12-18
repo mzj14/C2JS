@@ -9,6 +9,9 @@ Compiling C into JavaScript
 ### Syntax analyzer
 `parser.y`
 
+### AST definition
+`node.hpp`
+
 ### Code generator
 `codeGen.cpp`
 
