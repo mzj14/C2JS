@@ -203,7 +203,7 @@ string codeGenOpr(nodeType *p) {
                     ans = codeGenId(pt->op[0]) + ".length";
                     break;
                 case STRCMP:
-                    ans = "(" + codeGenOpr(pt->op[0]) + " != " + codeGenOpr(pt->op[1]) + ")";
+                    ans = codeGenOpr(pt->op[0]) + " != " + codeGenOpr(pt->op[1]);
                     break;
                 case ISDIGIT:
                     ans = "!isNaN(parseInt(" + codeGenOpr(pt->op[0]) + "))";
