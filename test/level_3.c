@@ -5,23 +5,33 @@
 
 int Priority(char op)
 {
-    if (op=='#')
+    if (op=='#') {
         return 0;
-    if (op=='+' || op=='-')
+    }
+    if (op=='+' || op=='-') {
         return 1;
-    if (op=='*' || op=='/')
+    }
+    if (op=='*' || op=='/') {
         return 2;
-    else
-        return -1;
+    }
+    return -1;
 }
 
 double Operate(double x,double y,char op)
 {
-    if (op=='+') return x+y;
-    if (op=='-') return x-y;
-    if (op=='*') return x*y;
-    if (op=='/') return x/y;
-    else return -1;
+    if (op=='+') {
+        return x+y;
+    }
+    if (op=='-') {
+        return x-y;
+    }
+    if (op=='*') {
+        return x*y;
+    }
+    if (op=='/') {
+        return x/y;
+    }
+    return -1;
 }
 
 double Calc(char str[])
@@ -48,8 +58,9 @@ double Calc(char str[])
         if (str[i]==' ' || str[i] == '\n' || str[i] == '\t') {
             continue;
         }
-        if (isdigit(str[i]))                //数字
+        if (isdigit(str[i]))
         {
+            //数字
             tmp = str[i] - '0';
             while(isdigit(str[i+1])) {
                 i ++;
@@ -73,8 +84,9 @@ double Calc(char str[])
         }
         else
         {
-            while (Priority(stOp[top2]) >= Priority(str[i]))//如果操作栈顶的操作符优先级高，则作+-*/运算
+            while (Priority(stOp[top2]) >= Priority(str[i]))
             {
+                //如果操作栈顶的操作符优先级高，则作+-*/运算
                 if (str[i]=='#' && stOp[top2]=='#') {
                     return stDit[top1];
                 }
@@ -95,7 +107,7 @@ int main()
     printf("Please enter an arithmetic expression, less than 100 characters:\n");
     while (1) {
         gets(str);
-        if (!strcmp(str,"")) {
+        if (!(strcmp(str,""))) {
             continue;
         } else {
             printf("%.2lf\n", Calc(str));
