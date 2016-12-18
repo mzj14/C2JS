@@ -289,11 +289,7 @@ string codeGenSta(nodeType* p_temp, int indent_level) {
             ans = "return " + codeGenOpr(p->pt[0]) + ";";
             break;
         case DECLARE_ARRAY:
-            if (((typNodeType*)(p->pt[0]))->value == charType) {
-                ans = codeGenTyp(p->pt[0]) + " " + codeGenId(p->pt[1]) + " = " + "\'\';";
-            } else {
-                ans = codeGenTyp(p->pt[0]) + " " + codeGenId(p->pt[1]) + " = " + "new Array(" + codeGenInt(p->pt[2]) + ");";
-            }
+            ans = codeGenTyp(p->pt[0]) + " " + codeGenId(p->pt[1]) + " = " + "new Array(" + codeGenInt(p->pt[2]) + ");";
             break;
         case DECLARE:
             if (p->npts == 3) {
