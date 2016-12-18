@@ -122,7 +122,7 @@ int yylex(void);
 %nonassoc UMINUS
 
 %type <nPtr> function function_list type_name statement statement_list expr expr_list param param_list
-
+%expect 180
 %%
 program:
         function_list                                                          { codeGenPro($1); freeNode($1); exit(0); }
