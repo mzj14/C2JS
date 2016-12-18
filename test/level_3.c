@@ -52,8 +52,8 @@ double Calc(char str[])
         {
             tmp = str[i] - '0';
             while(isdigit(str[i+1])) {
+                i ++;
                 tmp = tmp * 10 + str[i] - '0';
-                i++;
             }
             stDit[++top1] = tmp;
             continue;
