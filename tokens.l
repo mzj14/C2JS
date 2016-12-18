@@ -2,7 +2,6 @@ D			[0-9]
 L			[a-zA-Z_]
 
 %{
-//TODO: remove the unnecessary header file
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
@@ -109,7 +108,7 @@ int getIDIndex(char* text) {
         if (sym[i] != textStr) {
             i++;
         } else {
-        return i;
+            return i;
         }
     }
 
@@ -128,7 +127,7 @@ int getChrIndex(char* text) {
         if (chr[i] != textStr) {
             i++;
         } else {
-        return i;
+            return i;
         }
     }
 
