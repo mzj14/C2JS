@@ -32,11 +32,3 @@
 *.dSYM/
 *.su
 *.swp
-
-# Others
-tokens.cpp
-parser.cpp
-parser.hpp
-parser
-*.txt
-*.js
