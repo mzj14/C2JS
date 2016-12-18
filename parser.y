@@ -81,8 +81,6 @@ void freeNode(nodeType *p);
 
 void yyerror(char* s);
 
-int ex(nodeType *p);
-
 // used by yacc itself
 int yylex(void);
 
@@ -635,11 +633,9 @@ int main(int argc, char *argv[]) {
        // yydebug = 1;
     // #endif
     yyin = fopen(argv[1], "r");
-    // out_graph = fopen(argv[2], "w");
     generated_code = fopen(argv[2], "w");
     yyparse();
     fclose(yyin);
-    // fclose(out_graph);
     fclose(generated_code);
     return 0;
 }
