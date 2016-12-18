@@ -1,46 +1,37 @@
-# C2LLVM
-A front end part of a compiler to translate C to LLVM
-
-----
+# C2JS
+Compiling C into JavaScript
 
 ## Project structure
 
-### Lexical Analyzer
-The lexical analyzer is located in parser.l
+### Lexical analyzer
+`tokens.l`
 
-### Syntax Analyzer
-The syntax analyzer is located in parser.y
+### Syntax analyzer
+`parser.y`
 
-### AST Structure
-The AST structure is located in calc3.h
+### Abstract syntax tree and its visualizer
+`graph.cpp`
 
-### AST Presentation
-The AST presentation is located in graph.c
+### Code generator
+`codeGen.cpp`
 
-### Test Case
-Two test case are located in level_1.c, level_2.c, accompanied by level_1.ll and level_2.ll as LLVM IR reference.
+### Testcases
+`level_*.c`, accompanied by `level_*.js` as reference.
 
----
 
-## How to use
+## Usage
 
-### Install Flex and Bison
+## Prerequisites
 
-```
-sudo apt-get install flex bison
-```
+    apt-get install flex bison
 
-### To visualize AST
+To run the compiled code, you need `nodejs` with ES6 support, and several `npm` packages:
 
-```
-lex parser.l
-yacc -d parser.y
-cc lex.yy.c y.tab.c graph.c -o parser
-./parser test/level_1.c test/graph_1.txt
-```
+    npm install -g printf readline-sync
 
-These commands will generate AST in test/graph_1.txt for test/level_1.c
+## Usage
 
-### To generate LLVM IR
-
-We need to implement the `ex` function in parser.y !!!
+    make
+    
+    ./parser test/level_1.c test/level_1.js
+    node test/level_1.js
