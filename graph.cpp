@@ -10,7 +10,7 @@
 
 using namespace std;
 
-int del = 1; /* distance of graph columns */
+int del = 5; /* distance of graph columns */
 int eps = 3; /* distance of graph lines */
 
 FILE* out_graph; /* out put file for graph */
@@ -64,12 +64,13 @@ void exNode
     int k;              /* child number */
     int che, chm;       /* end column and mid of children */
     int cs;             /* start column of children */
-    char word[200];        /* extended node text */
+    char word[100];        /* extended node text */
 
     if (!p) return;
 
     strcpy (word, "???"); /* should never appear */
     s = word;
+    cout << "p->type = " << p->type << endl;
     switch(p->type) {
         case typeTyp:
             switch(((typNodeType*)p)->value) {
@@ -149,7 +150,6 @@ void exNode
                     break;
             }
             break;
-
         case typeOpr:
             switch(((oprNodeType*)p)->oper){
                 case STRLEN:                      sprintf(s, "strlen");  break;
@@ -387,7 +387,7 @@ void graphInit (void) {
 
 void graphFinish() {
     int i, j;
-    char out_stream[300];
+    char out_stream[3000];
 
     for (i = 0; i < lmax; i++) {
         for (j = cmax-1; j > 0 && graph[i][j] == ' '; j--);
