@@ -1,4 +1,4 @@
-OBJS = tokens.o parser.o graph.o codeGen.o
+OBJS = tokens.o parser.o codeGen.o
 CC = g++
 
 all: parser

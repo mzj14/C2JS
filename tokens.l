@@ -8,7 +8,7 @@ L			[a-zA-Z_]
 #include <ctype.h>
 #include <string>
 
-#include "graph.hpp"
+#include "node.hpp"
 #include "parser.hpp"
 
 using namespace std;

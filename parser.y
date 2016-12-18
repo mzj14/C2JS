@@ -14,7 +14,6 @@
 #include <string>
 
 #include "node.hpp"
-#include "graph.hpp"
 #include "codegen.hpp"
 
 using namespace std;
