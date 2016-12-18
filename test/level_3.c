@@ -40,19 +40,19 @@ double Calc(char str[])
     char stOp[300];
     int top1;
     int top2;
-    
+
     double x;
     double y;
     double tmp;
     char op;
     int i;
     int n = strlen(str);
-    
+
     top1 = -1;
     top2 = -1;
     stOp[++top2] = '#';
     str[n++] = '#';
-    
+
     for(i=0; i < n; ++i)
     {
         if (str[i]==' ' || str[i] == '\n' || str[i] == '\t') {
@@ -64,7 +64,7 @@ double Calc(char str[])
             tmp = str[i] - '0';
             while(isdigit(str[i+1])) {
                 i ++;
-                tmp = tmp * 10 + str[i] - '0';
+                tmp = tmp * 10 + (str[i] - '0');
             }
             stDit[++top1] = tmp;
             continue;

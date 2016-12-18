@@ -283,7 +283,7 @@ string codeGenSta(nodeType* p_temp, int indent_level) {
             break;
         case GETS:
             setModuleInfo("readlineSync", "readline-sync");
-            ans = codeGenId(p->pt[0]) + " = " + "readlineSync.question('');";
+            ans = codeGenId(p->pt[0]) + " = " + "readlineSync.question('').split('');";
             break;
         case RETURN:
             ans = "return " + codeGenOpr(p->pt[0]) + ";";
