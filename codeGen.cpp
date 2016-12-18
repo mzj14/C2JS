@@ -13,8 +13,10 @@
 
 using namespace std;
 
-// vectors for node js require module statements
+/* vectors for node js require module statements */
+// variable related to package
 vector<string> container;
+// package name
 vector<string> module;
 
 FILE *generated_code;
@@ -73,7 +75,6 @@ string codeGenTyp(nodeType *p);
 /*********************************************************************************************************************/
 
 void setModuleInfo(string container_name, string module_name) {
-    // //cout << "set module info" << endl;
     vector<string>::iterator result = find(module.begin( ), module.end( ), module_name);
     // can not find the module
     if (result == module.end()) {
@@ -123,6 +124,7 @@ string codeGenChr(nodeType *p_temp) {
         cerr << "not chrNodeType !" << endl;
     }
     chrNodeType* p = (chrNodeType*)p_temp;
+    // return character as well as the single quotes
     return chr[p->i];
 }
 
@@ -131,6 +133,7 @@ string codeGenStr(nodeType *p_temp) {
         cerr << "not strNodeType !" << endl;
     }
     strNodeType* p = (strNodeType*)p_temp;
+    // return the string as well as the double quotes
     return str[p->i];
 }
 
@@ -203,7 +206,7 @@ string codeGenOpr(nodeType *p) {
                 case OR_OP:
                     ans = codeGenOpr(pt->op[0]) + " || " + codeGenOpr(pt->op[1]);
                     break;
-                case NOT_OP:
+                case '!':
                     ans = "!" + codeGenOpr(pt->op[0]);
                     break;
                 case '[':
@@ -241,7 +244,6 @@ string codeGenSta(nodeType* p_temp, int indent_level) {
     string ans = "";
     switch (p->mark) {
         case COMMENT:
-            cout << "comment statement" << endl;
             ans = codeGenStr(p->pt[0]);
             break;
         case INC_OP_LEFT:
@@ -272,37 +274,31 @@ string codeGenSta(nodeType* p_temp, int indent_level) {
             ans = "for (" + codeGenSta(p->pt[0], 0) + codeGenOpr(p->pt[1]) + "; " + codeGenOpr(p->pt[2]) + ") " + codeGenLis(p->pt[3], indent_level + 1);
             break;
         case IF:
-            //cout << "if statement" << endl;
             ans = "if (" + codeGenOpr(p->pt[0]) + ") " + codeGenLis(p->pt[1], indent_level + 1);
             break;
         case ELSE:
-            // //cout << "else statement" << endl;
             ans = "if (" + codeGenOpr(p->pt[0]) + ") "
                   + codeGenLis(p->pt[1], indent_level + 1) + " else " + codeGenLis(p->pt[2], indent_level + 1);
             break;
         case GETS:
-            // //cout << "gets statement" << endl;
             setModuleInfo("readlineSync", "readline-sync");
             ans = codeGenId(p->pt[0]) + " = " + "readlineSync.question('');";
             break;
         case RETURN:
-            // //cout << "return statement" << endl;
             ans = "return " + codeGenOpr(p->pt[0]) + ";";
             break;
         case DECLARE_ARRAY:
-            //cout << "declare array statement" << endl;
             if (((typNodeType*)(p->pt[0]))->value == charType) {
-                ans = "let " + codeGenId(p->pt[1]) + " = " + "\'\';";
+                ans = codeGenTyp(p->pt[0]) + " " + codeGenId(p->pt[1]) + " = " + "\'\';";
             } else {
-                ans = "let " + codeGenId(p->pt[1]) + " = " + "new Array(" + codeGenInt(p->pt[2]) + ");";
+                ans = codeGenTyp(p->pt[0]) + " " + codeGenId(p->pt[1]) + " = " + "new Array(" + codeGenInt(p->pt[2]) + ");";
             }
             break;
         case DECLARE:
-            // //cout << "declare statement" << endl;
             if (p->npts == 3) {
-                ans = "let " + codeGenId(p->pt[1]) + " = " + codeGenOpr(p->pt[2]) + ";";
+                ans = codeGenTyp(p->pt[0]) + " " + codeGenId(p->pt[1]) + " = " + codeGenOpr(p->pt[2]) + ";";
             } else {
-                ans = "let " + codeGenId(p->pt[1]) + " = undefined;";
+                ans = codeGenTyp(p->pt[0]) + " " + codeGenId(p->pt[1]) + " = undefined;";
             }
             break;
         case '=':
@@ -311,7 +307,6 @@ string codeGenSta(nodeType* p_temp, int indent_level) {
             } else {
                 ans = codeGenId(p->pt[0]) + "[" + codeGenOpr(p->pt[1]) + "] = " + codeGenOpr(p->pt[2]) + ";";
             }
-            cout << "assignment" << endl;
             break;
         case PRINTF:
             setModuleInfo("printf", "printf");
@@ -329,7 +324,6 @@ string codeGenEps(nodeType* p_temp) {
     epsNodeType* p = (epsNodeType*)p_temp;
     string ans = "";
     for (int i = 0; i < p->neps; i++) {
-        cout << "get every param" << endl;
         ans += codeGenOpr(p->ep[i]);
         if (i != p->neps - 1) {
             ans += ", ";
@@ -390,7 +384,6 @@ string codeGenFun(nodeType* p_temp) {
         ans += "() => ";
         ans += codeGenLis(p->pt[2], 1);
     } else {
-        // //cout << "generate the function !" << endl;
         ans += "(" + codeGenPrs(p->pt[2]) + ") => ";
         ans += codeGenLis(p->pt[3], 1);
     }

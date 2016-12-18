@@ -213,7 +213,7 @@ expr:
         | expr EQ_OP expr                                                      { $$ = opr(EQ_OP, 2, $1, $3); }
         | expr OR_OP expr                                                      { $$ = opr(OR_OP, 2, $1, $3); }
         | expr AND_OP expr                                                     { $$ = opr(AND_OP, 2, $1, $3); }
-        | NOT_OP expr                                                          { $$ = opr(NOT_OP, 1, $2); }
+        | '!' expr                                                             { $$ = opr('!', 1, $2); }
         | expr LE_OP expr                                                      { $$ = opr(LE_OP, 2, $1, $3); }
         | expr GE_OP expr                                                      { $$ = opr(GE_OP, 2, $1, $3); }
         | '(' expr ')'                                                         { $$ = opr('(', 1, $2); }
