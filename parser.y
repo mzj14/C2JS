@@ -19,8 +19,7 @@
 
 using namespace std;
 
-/* prototypes */
-
+/******************************* node construction function ********************************************/
 // construct a program type node, return the pointer
 nodeType *pro(int nfns, ...);
 
@@ -62,10 +61,9 @@ nodeType *conChr(int i);
 
 // construct a string type node, return the pointer
 nodeType *conStr(int i);
+/********************************************************************************************************/
 
-// show content of sym vector, used for debug
-void showSym(vector<string>& sym);
-
+/******************************** get node children num function ****************************************/
 // get param num of a param list
 int getParamNum(nodeType* params);
 
@@ -77,6 +75,7 @@ int getExpNum(nodeType* p);
 
 // get function num of a program
 int getFuncNum(nodeType* p);
+/*********************************************************************************************************/
 
 // free the node of AST
 void freeNode(nodeType *p);
@@ -84,8 +83,6 @@ void freeNode(nodeType *p);
 void yyerror(char* s);
 
 int ex(nodeType *p);
-
-void codeGenFun(funNodeType *p);
 
 // used by yacc itself
 int yylex(void);
@@ -96,10 +93,10 @@ int yylex(void);
 /* set yylval as the following union type */
 %union {
     typeEnum iType;                  /* type category */
-    int iValue;                     /* integer value */
-    int sIndex;                     /* sym and str table index */
-    double dValue;                  /* double value */
-    nodeType *nPtr;                 /* node pointer */
+    int iValue;                      /* integer value */
+    int sIndex;                      /* sym, str, chr vector index */
+    double dValue;                   /* double value */
+    nodeType *nPtr;                  /* node pointer */
 };
 
 %token <iValue> INTEGER
@@ -128,7 +125,7 @@ int yylex(void);
 
 %%
 program:
-        function_list                                        { /* showSym(sym); */ /* ex($1); */ codeGenPro($1); freeNode($1); exit(0); }
+        function_list                                                          { codeGenPro($1); freeNode($1); exit(0); }
         ;
 
 function_list:
@@ -152,74 +149,74 @@ param:
         ;
 
 type_name:
-          INT                                           { $$ = conTyp($1); }
-        | CHAR                                          { $$ = conTyp($1); }
-        | DOUBLE                                        { $$ = conTyp($1); }
+          INT                                                                  { $$ = conTyp($1); }
+        | CHAR                                                                 { $$ = conTyp($1); }
+        | DOUBLE                                                               { $$ = conTyp($1); }
         ;
 
 statement_list:
-          statement                                    { $$ = lis(1, $1); }
-        | statement statement_list                      { $$ = lis(1 + getStateNum($2), $1, $2); }
+          statement                                                            { $$ = lis(1, $1); }
+        | statement statement_list                                             { $$ = lis(1 + getStateNum($2), $1, $2); }
         ;
 
 statement:
-          BREAK ';'                                                               { $$ = sta(BREAK, 0); }
-        | CONTINUE ';'                                                            { $$ = sta(CONTINUE, 0); }
-        | RETURN expr ';'                                                         { $$ = sta(RETURN, 1, $2); }
-        | PRINTF '(' expr_list ')' ';'                                            { $$ = sta(PRINTF, 2, $3); }
-        | IDENTIFIER '(' expr_list ')' ';'                                        { $$ = sta(IDENTIFIER, 2, id($1), $3); }
-        | GETS '(' IDENTIFIER ')' ';'                                             { $$ = sta(GETS, 1, id($3)); }
-        | IDENTIFIER '=' expr ';'                                                 { $$ = sta('=', 2, id($1), $3); }
-        | IDENTIFIER '[' expr ']' '=' expr ';'                                    { $$ = sta('=', 3, id($1), $3, $6); }
-        | type_name IDENTIFIER '[' INTEGER ']' ';'                                { $$ = sta(DECLARE_ARRAY, 3, $1, id($2), conInt($4)); }
-        | type_name IDENTIFIER '=' expr ';'                                       { $$ = sta(DECLARE, 3, $1, id($2), $4); }
-        | type_name IDENTIFIER ';'                                                { $$ = sta(DECLARE, 2, $1, id($2)); }
-        | WHILE '(' expr ')' '{' statement_list '}'                               { $$ = sta(WHILE, 2, $3, $6); }
-        | IF '(' expr ')' '{' statement_list '}' %prec IFX                        { $$ = sta(IF, 2, $3, $6); }
-        | IF '(' expr ')' '{' statement_list '}' ELSE '{' statement_list '}'      { $$ = sta(ELSE, 3, $3, $6, $10); }  // IF-ELSE is prior to the IF statement
-        | FOR '(' statement expr ';' expr ')' '{' statement_list '}'              { $$ = sta(FOR, 4, $3, $4, $6, $9); }
-        | INC_OP expr ';'                                                            { $$ = sta(INC_OP_LEFT, 1, $2);  }
-        | DEC_OP expr ';'                                                            { $$ = sta(DEC_OP_LEFT, 1, $2);  }
-        | expr INC_OP ';'                                                            { $$ = sta(INC_OP_RIGHT, 1, $1);  }
-        | expr DEC_OP ';'                                                         { $$ = sta(DEC_OP_RIGHT, 1, $1);  }
-        | COMMENT                                                                 { $$ = sta(COMMENT, 1, conStr($1)); }
+          BREAK ';'                                                            { $$ = sta(BREAK, 0); }
+        | CONTINUE ';'                                                         { $$ = sta(CONTINUE, 0); }
+        | RETURN expr ';'                                                      { $$ = sta(RETURN, 1, $2); }
+        | PRINTF '(' expr_list ')' ';'                                         { $$ = sta(PRINTF, 1, $3); }
+        | IDENTIFIER '(' expr_list ')' ';'                                     { $$ = sta(IDENTIFIER, 2, id($1), $3); }
+        | GETS '(' IDENTIFIER ')' ';'                                          { $$ = sta(GETS, 1, id($3)); }
+        | IDENTIFIER '=' expr ';'                                              { $$ = sta('=', 2, id($1), $3); }
+        | IDENTIFIER '[' expr ']' '=' expr ';'                                 { $$ = sta('=', 3, id($1), $3, $6); }
+        | type_name IDENTIFIER '[' INTEGER ']' ';'                             { $$ = sta(DECLARE_ARRAY, 3, $1, id($2), conInt($4)); }
+        | type_name IDENTIFIER '=' expr ';'                                    { $$ = sta(DECLARE, 3, $1, id($2), $4); }
+        | type_name IDENTIFIER ';'                                             { $$ = sta(DECLARE, 2, $1, id($2)); }
+        | WHILE '(' expr ')' '{' statement_list '}'                            { $$ = sta(WHILE, 2, $3, $6); }
+        | IF '(' expr ')' '{' statement_list '}' %prec IFX                     { $$ = sta(IF, 2, $3, $6); }
+        | IF '(' expr ')' '{' statement_list '}' ELSE '{' statement_list '}'   { $$ = sta(ELSE, 3, $3, $6, $10); }  // IF-ELSE is prior to the IF statement
+        | FOR '(' statement expr ';' expr ')' '{' statement_list '}'           { $$ = sta(FOR, 4, $3, $4, $6, $9); }
+        | INC_OP expr ';'                                                      { $$ = sta(INC_OP_LEFT, 1, $2);  }
+        | DEC_OP expr ';'                                                      { $$ = sta(DEC_OP_LEFT, 1, $2);  }
+        | expr INC_OP ';'                                                      { $$ = sta(INC_OP_RIGHT, 1, $1);  }
+        | expr DEC_OP ';'                                                      { $$ = sta(DEC_OP_RIGHT, 1, $1);  }
+        | COMMENT                                                              { $$ = sta(COMMENT, 1, conStr($1)); }
         ;
 
 expr_list:
-          expr                                                                    { $$ = eps(1, $1); }
-        | expr ',' expr_list                                                      { $$ = eps(1 + getExpNum($3), $1, $3); }
+          expr                                                                 { $$ = eps(1, $1); }
+        | expr ',' expr_list                                                   { $$ = eps(1 + getExpNum($3), $1, $3); }
         ;
 
 expr:
-          INTEGER                                       { $$ = conInt($1); }
-        | DOUBLE_NUM                                    { $$ = conDbl($1); }
-        | CHARACTER                                     { $$ = conChr($1); }
-        | STRING                                        { $$ = conStr($1); }
-        | IDENTIFIER                                    { $$ = id($1); }
-        | '-' expr %prec UMINUS                         { $$ = opr(UMINUS, 1, $2); }
-        | STRLEN '(' IDENTIFIER ')'                     { $$ = opr(STRLEN, 1, id($3)); }
-        | STRCMP '(' expr ',' expr ')'                  { $$ = opr(STRCMP, 2, $3, $5); }
-        | ISDIGIT '(' expr ')'                          { $$ = opr(ISDIGIT, 1, $3); }
-        | IDENTIFIER '(' expr_list ')'                  { $$ = opr(IDENTIFIER, 2, id($1), $3); }
-        | IDENTIFIER '[' expr ']'                       { $$ = opr('[', 2, id($1), $3); }
-        | expr '+' expr                                 { $$ = opr('+', 2, $1, $3); }
-        | expr '-' expr                                 { $$ = opr('-', 2, $1, $3); }
-        | expr '*' expr                                 { $$ = opr('*', 2, $1, $3); }
-        | expr '/' expr                                 { $$ = opr('/', 2, $1, $3); }
-        | expr '<' expr                                 { $$ = opr('<', 2, $1, $3); }
-        | expr '>' expr                                 { $$ = opr('>', 2, $1, $3); }
-        | INC_OP expr                                   { $$ = opr(INC_OP_LEFT, 1, $2);  }
-        | DEC_OP expr                                   { $$ = opr(DEC_OP_LEFT, 1, $2);  }
-        | expr INC_OP                                   { $$ = opr(INC_OP_RIGHT, 1, $1);  }
-        | expr DEC_OP                                   { $$ = opr(DEC_OP_RIGHT, 1, $1);  }
-        | expr NE_OP expr                               { $$ = opr(NE_OP, 2, $1, $3); }
-        | expr EQ_OP expr                               { $$ = opr(EQ_OP, 2, $1, $3); }
-        | expr OR_OP expr                               { $$ = opr(OR_OP, 2, $1, $3); }
-        | expr AND_OP expr                              { $$ = opr(AND_OP, 2, $1, $3); }
-        | NOT_OP expr                                   { $$ = opr(NOT_OP, 1, $2); }
-        | expr LE_OP expr                               { $$ = opr(LE_OP, 2, $1, $3); }
-        | expr GE_OP expr                               { $$ = opr(GE_OP, 2, $1, $3); }
-        | '(' expr ')'                                  { $$ = opr('(', 1, $2); }
+          INTEGER                                                              { $$ = conInt($1); }
+        | DOUBLE_NUM                                                           { $$ = conDbl($1); }
+        | CHARACTER                                                            { $$ = conChr($1); }
+        | STRING                                                               { $$ = conStr($1); }
+        | IDENTIFIER                                                           { $$ = id($1); }
+        | '-' expr %prec UMINUS                                                { $$ = opr(UMINUS, 1, $2); }
+        | STRLEN '(' IDENTIFIER ')'                                            { $$ = opr(STRLEN, 1, id($3)); }
+        | STRCMP '(' expr ',' expr ')'                                         { $$ = opr(STRCMP, 2, $3, $5); }
+        | ISDIGIT '(' expr ')'                                                 { $$ = opr(ISDIGIT, 1, $3); }
+        | IDENTIFIER '(' expr_list ')'                                         { $$ = opr(IDENTIFIER, 2, id($1), $3); }
+        | IDENTIFIER '[' expr ']'                                              { $$ = opr('[', 2, id($1), $3); }
+        | expr '+' expr                                                        { $$ = opr('+', 2, $1, $3); }
+        | expr '-' expr                                                        { $$ = opr('-', 2, $1, $3); }
+        | expr '*' expr                                                        { $$ = opr('*', 2, $1, $3); }
+        | expr '/' expr                                                        { $$ = opr('/', 2, $1, $3); }
+        | expr '<' expr                                                        { $$ = opr('<', 2, $1, $3); }
+        | expr '>' expr                                                        { $$ = opr('>', 2, $1, $3); }
+        | INC_OP expr                                                          { $$ = opr(INC_OP_LEFT, 1, $2);  }
+        | DEC_OP expr                                                          { $$ = opr(DEC_OP_LEFT, 1, $2);  }
+        | expr INC_OP                                                          { $$ = opr(INC_OP_RIGHT, 1, $1);  }
+        | expr DEC_OP                                                          { $$ = opr(DEC_OP_RIGHT, 1, $1);  }
+        | expr NE_OP expr                                                      { $$ = opr(NE_OP, 2, $1, $3); }
+        | expr EQ_OP expr                                                      { $$ = opr(EQ_OP, 2, $1, $3); }
+        | expr OR_OP expr                                                      { $$ = opr(OR_OP, 2, $1, $3); }
+        | expr AND_OP expr                                                     { $$ = opr(AND_OP, 2, $1, $3); }
+        | NOT_OP expr                                                          { $$ = opr(NOT_OP, 1, $2); }
+        | expr LE_OP expr                                                      { $$ = opr(LE_OP, 2, $1, $3); }
+        | expr GE_OP expr                                                      { $$ = opr(GE_OP, 2, $1, $3); }
+        | '(' expr ')'                                                         { $$ = opr('(', 1, $2); }
         ;
 %%
 
@@ -229,10 +226,10 @@ nodeType *conTyp(typeEnum value) {
     p = new typNodeType();
 
     /* copy information */
-    /* set the new node to constant node */
+    /* set the new node to type node */
     p->type = typeTyp;
 
-    /* set constant node value */
+    /* set type node value */
     p->value = value;
 
     return p;
@@ -244,10 +241,10 @@ nodeType *conInt(int value) {
     p = new intNodeType();
 
     /* copy information */
-    /* set the new node to constant node */
+    /* set the new node to integer node */
     p->type = typeInt;
 
-    /* set constant node value */
+    /* set integer node value */
     p->value = value;
 
     return p;
@@ -259,10 +256,10 @@ nodeType *conDbl(double value) {
     p = new dblNodeType();
 
     /* copy information */
-    /* set the new node to constant node */
+    /* set the new node to double node */
     p->type = typeDbl;
 
-    /* set constant node value */
+    /* set double node value */
     p->value = value;
 
     return p;
@@ -274,10 +271,10 @@ nodeType *conChr(int i) {
     p = new chrNodeType();
 
     /* copy information */
-    /* set the new node to constant node */
+    /* set the new node to character node */
     p->type = typeChr;
 
-    /* set constant node value */
+    /* set character node index in chr vector */
     p->i = i;
 
     return p;
@@ -289,10 +286,10 @@ nodeType *conStr(int i) {
     p = new strNodeType();
 
     /* copy information */
-    /* set the new node to constant node */
+    /* set the new node to string node */
     p->type = typeStr;
 
-    /* set constant node value */
+    /* set string node index in str vector */
     p->i = i;
 
     return p;
@@ -306,7 +303,7 @@ nodeType *id(int i) {
     /* copy information */
     /* set the new node to identifier node */
     p->type = typeId;
-    /* set the identifier index in sym */
+    /* set identifier index in sym vector */
     p->i = i;
 
     return p;
@@ -423,6 +420,7 @@ nodeType *eps(int neps, ...) {
         epsNodeType* expression_list = va_arg(ap, epsNodeType*);
         for (i = 1; i < neps; i++)
             p->ep.push_back(expression_list->ep[i - 1]);
+        delete expression_list;
     }
 
     va_end(ap);
@@ -456,6 +454,7 @@ nodeType *lis(int nsts, ...) {
         lisNodeType* statement_list = va_arg(ap, lisNodeType*);
         for (i = 1; i < nsts; i++)
             p->st.push_back(statement_list->st[i - 1]);
+        delete statement_list;
     }
 
     va_end(ap);
@@ -489,6 +488,7 @@ nodeType *prs(int npas, ...) {
         prsNodeType* param_list = va_arg(ap, prsNodeType*);
         for (i = 1; i < npas; i++)
             p->pa.push_back(param_list->pa[i - 1]);
+        delete param_list;
     }
 
     va_end(ap);
@@ -547,6 +547,7 @@ nodeType *pro(int nfns, ...) {
         proNodeType* func_list = va_arg(ap, proNodeType*);
         for (i = 1; i < nfns; i++)
             p->fn.push_back(func_list->fn[i - 1]);
+        delete func_list;
     }
 
     va_end(ap);
@@ -563,6 +564,13 @@ void freeNode(nodeType *p) {
                 oprNodeType* p_opr = (oprNodeType*)p;
                 for (i = 0; i < p_opr->nops; i++)
                     freeNode(p_opr->op[i]);
+            }
+            break;
+        case typeEps:
+            {
+                epsNodeType* p_eps = (epsNodeType*)p;
+                for (i = 0; i < p_eps->neps; i++)
+                    freeNode(p_eps->ep[i]);
             }
             break;
         case typeSta:
@@ -586,8 +594,28 @@ void freeNode(nodeType *p) {
                    freeNode(p_fun->pt[i]);
             }
             break;
+        case typePar:
+            {
+                parNodeType* p_par = (parNodeType*)p;
+                for (i = 0; i < p_par->npts; i++)
+                   freeNode(p_par->pt[i]);
+            }
+            break;
+        case typePrs:
+            {
+                prsNodeType* p_prs = (prsNodeType*)p;
+                for (i = 0; i < p_prs->npas; i++)
+                   freeNode(p_prs->pa[i]);
+            }
+            break;
+        case typePro:
+            {
+                proNodeType* p_pro = (proNodeType*)p;
+                for (i = 0; i < p_pro->nfns; i++)
+                   freeNode(p_pro->fn[i]);
+            }
+            break;
     }
-
     delete p;
 }
 
