@@ -17,9 +17,6 @@ parser.hpp: parser.cpp
 %.o: %.cpp
 	$(CC) -c -o $@ $< $(FLAGS)
 
-test: parser
-	./parser test/level_0.c test/graph_0.txt
-
 clean:
 	rm -rf parser.cpp parser.hpp parser tokens.cpp $(OBJS)
 
