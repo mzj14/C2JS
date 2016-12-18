@@ -31,11 +31,7 @@ To run the compiled code, you need `nodejs` with ES6 support, and several `npm` 
 
 ## Usage
 
-_TODO_
-
     make
     
     ./parser test/level_1.c test/level_1.js
     node test/level_1.js
-
-    ./parser test/level_1.c test/level_1_graph.txt | node --
